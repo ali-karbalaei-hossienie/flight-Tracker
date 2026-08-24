@@ -10,6 +10,7 @@ import CoordinateDisplay from "./components/CoordinateDisplay/CoordinateDisplay"
 import Draw from "./components/Draw/Draw";
 import Edit from "./components/Edit/Edit";
 import MultiMapLayers from "./components/MultiMapLayers/MultiMapLayers";
+import { useMediaQuery, useTheme } from "@mui/material";
 
 const blankStyle: StyleSpecification = {
   version: 8,
@@ -20,6 +21,9 @@ const blankStyle: StyleSpecification = {
 };
 const MapBox = () => {
   const { map } = useMap();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const geomanRef = useRef<Geoman | null>(null);
 
   useEffect(() => {
@@ -53,7 +57,7 @@ const MapBox = () => {
     >
       <MapNavigation />
       <FullscreenControl />
-      <CoordinateDisplay />
+      {!isMobile && <CoordinateDisplay />}
       <Draw />
       <Edit />
       <MultiMapLayers />

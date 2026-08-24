@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef, type RefObject } from "react";
 import { useMap } from "react-map-gl/mapbox";
 import { useSelector } from "react-redux";
 import type { layerTpe } from "../types/mapLayerType";
-import type { RootState } from "../../../../app/store";
+import type { RootState } from "../../../../../app/store";
 
 const BASE_SOURCE_LEFT_ID = "base-source-left";
 const BASE_SOURCE_RIGHT_ID = "base-source-right";
@@ -113,6 +113,9 @@ export const useMultiMapLayers = (): UseMultiMapLayersReturn => {
           id: BASE_LAYER_ID,
           type: "raster",
           source: BASE_SOURCE_ID,
+          paint: {
+            "raster-fade-duration": 0,
+          },
         } satisfies LayerSpecification);
       }
     },
