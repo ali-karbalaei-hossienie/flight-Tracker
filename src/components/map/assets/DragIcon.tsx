@@ -1,0 +1,9 @@
+import SvgIcon, { type SvgIconProps } from "@mui/material/SvgIcon";
+
+export default function DragIcon(props: SvgIconProps) {
+  return (
+    <SvgIcon {...props} viewBox="0 0 64 64">
+      <path d="M32 61.4 19.85 49.42l3.28-3.235 6.634 6.542V34.205H10.98l6.26 6.174-3.279 3.234L2.185 32l11.852-11.686 3.28 3.234-6.336 6.247h18.783V11.273l-6.261 6.174-3.28-3.234L32 2.6l11.777 11.613-3.28 3.234-6.26-6.174v18.522h18.782l-6.26-6.174 3.279-3.234L61.815 32 50.038 43.613l-3.28-3.234 6.261-6.174H34.236v18.522l6.634-6.542 3.28 3.234z"></path>
+    </SvgIcon>
+  );
+}

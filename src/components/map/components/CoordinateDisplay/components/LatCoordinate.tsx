@@ -1,0 +1,39 @@
+import { Box, Typography } from "@mui/material";
+
+type Coordinates = {
+  lat: number | string;
+};
+
+type LatCoordinateProps = {
+  coords: Coordinates | null;
+};
+
+const LatCoordinate = ({ coords }: LatCoordinateProps) => {
+  return (
+    <>
+      <Typography
+        sx={{
+          color: "text.secondary",
+          fontSize: 10,
+          fontWeight: "bold",
+        }}
+      >
+        Lat
+      </Typography>
+      <Box>
+        <Typography
+          sx={{
+            minWidth: "70px",
+            color: "text.secondary",
+            textAlign: "center",
+            fontSize: "10px",
+          }}
+        >
+          {coords ? coords.lat : "-"}
+        </Typography>
+      </Box>
+    </>
+  );
+};
+
+export default LatCoordinate;

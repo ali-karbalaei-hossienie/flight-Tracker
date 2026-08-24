@@ -1,0 +1,9 @@
+import SvgIcon, { type SvgIconProps } from "@mui/material/SvgIcon";
+
+export default function DeleteIcon(props: SvgIconProps) {
+  return (
+    <SvgIcon {...props} viewBox="0 0 64 64">
+      <path d="M39.063 42.14 22.288 28.12 7.96 44.603l11.338 9.854h9.059zm-3.498 12.317h25.941v5.465h-44.25L4.377 48.726a5.465 5.465 0 0 1-.542-7.711L34.311 5.958a5.465 5.465 0 0 1 7.712-.538l16.496 14.343a5.465 5.465 0 0 1 .541 7.709z"></path>
+    </SvgIcon>
+  );
+}

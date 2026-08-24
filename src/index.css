@@ -1,0 +1,39 @@
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #e5a913 transparent;
+}
+
+.mapboxgl-ctrl-group,
+.mapboxgl-ctrl-group {
+  border: none !important;
+  box-shadow: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+.mapboxgl-ctrl .mapboxgl-ctrl-logo {
+  display: none;
+}
+
+.mapboxgl-ctrl.mapboxgl-ctrl-group.group-draw {
+  display: none;
+}
+
+.mapboxgl-ctrl.mapboxgl-ctrl-group.group-edit {
+  display: none;
+}
+
+.mapboxgl-ctrl.mapboxgl-ctrl-group.group-helper {
+  display: none;
+}
+
+.mapboxgl-ctrl-group button + button {
+  display: none;
+  border-top: none;
+}
+.mapboxgl-ctrl-group button {
+  display: flex;
+  border-top: none;
+}
+.mapboxgl-ctrl button:not(:disabled):hover {
+  background-color: inherit;
+}
