@@ -58,3 +58,11 @@ export interface AircraftListResponse {
   aircraft: Aircraft[];
   cached: boolean;
 }
+
+export interface BboxParams {
+  lamin?: number;
+  lomin?: number;
+  lamax?: number;
+  lomax?: number;
+  zoom?: number;
+}

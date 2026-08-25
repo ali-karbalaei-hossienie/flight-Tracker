@@ -2,9 +2,14 @@ import { useMemo } from "react";
 import DeckGLOverlay from "../../../../components/map/components/DeckGLOverlay/DeckGLOverlay";
 import { useAircraftListQuery } from "../../../../hooks/useAircraftQueries";
 import { createAircraftIconLayer } from "../AircraftLayer/layers/createAircraftLayer";
+import { useViewPort } from "../AircraftLayer/hooks/useViewPort";
+import { keepPreviousData } from "@tanstack/react-query";
 
 const MapEntitiesLayer = () => {
-  const { data } = useAircraftListQuery();
+  const { viewPort } = useViewPort();
+  const { data } = useAircraftListQuery(viewPort, {
+    placeholderData: keepPreviousData,
+  });
   const layers = useMemo(() => {
     let iconLayer;
     if (data?.aircraft.length) {

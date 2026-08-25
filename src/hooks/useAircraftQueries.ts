@@ -8,18 +8,12 @@ import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 //   fetchFleetStats,
 //   fetchFlightsByAircraft,
 // } from "../services/flightApi";
+import { fetchAircraftList } from "../services/flightApi";
 import type {
   // AircraftDetail,
   AircraftListResponse,
   AircraftQueryParams,
-  // AircraftTrackResponse,
-  // AirLabsFlight,
-  // Airport,
-  // Antenna,
-  // BboxParams,
-  // FleetStats,
 } from "../services/types";
-import { fetchAircraftList } from "../services/flightApi";
 
 export const queryKeys = {
   aircraft: {
