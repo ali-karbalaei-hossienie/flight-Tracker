@@ -1,9 +1,11 @@
-import { Box, createTheme, CssBaseline, ThemeProvider } from "@mui/material";
+import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { MapProvider } from "react-map-gl/mapbox";
-import { getDesignTokens } from "./theme/theme";
 import { Provider } from "react-redux";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Toaster } from "sonner";
 import { store } from "./app/store";
-import MapBox from "./components/map/Map";
+import AppShell from "./layout/AppShell";
+import { getDesignTokens } from "./theme/theme";
 
 // const sidebarConfig: ConfigType[] = [
 //   {
@@ -39,17 +41,26 @@ import MapBox from "./components/map/Map";
 function App() {
   const myTheme = createTheme(getDesignTokens("dark"));
   return (
-    <Provider store={store}>
-      <ThemeProvider theme={myTheme}>
-        <CssBaseline />
-
-        <MapProvider>
-          <Box sx={{ flex: 1, width: "100%", height: "100vh" }}>
-            <MapBox />
-          </Box>
-        </MapProvider>
-      </ThemeProvider>
-    </Provider>
+    <BrowserRouter>
+      <Provider store={store}>
+        <ThemeProvider theme={myTheme}>
+          <Toaster
+            position="top-center"
+            
+          />
+          <CssBaseline />
+          <MapProvider>
+            <Routes>
+              <Route element={<AppShell />}>
+                <Route index element={null} />
+                {/* <Route path="airplane" element={<AircraftListPage />} />
+                <Route path="airplane/:id" element={<AircraftDetailPage />} /> */}
+              </Route>
+            </Routes>
+          </MapProvider>
+        </ThemeProvider>
+      </Provider>
+    </BrowserRouter>
   );
 }
 
