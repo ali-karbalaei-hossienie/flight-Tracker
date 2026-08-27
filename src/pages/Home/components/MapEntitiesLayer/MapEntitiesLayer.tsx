@@ -7,7 +7,8 @@ import type { Aircraft } from "../../../../services/types";
 import { useAircraftSimulation } from "../AircraftLayer/hooks/useAircraftSimulation";
 import { useViewPort } from "../AircraftLayer/hooks/useViewPort";
 import { createAircraftIconLayer } from "../AircraftLayer/layers/createAircraftLayer";
-import { FlightTrackerMapOverlay } from "../FlightTrackerMapOverlay/FlightTrackerMapOverlay";
+import { FlightPopper } from "../FlightPopper/FlightPopper";
+import { createAircraftRouteLayer } from "../createAircraftRouteLayer/createAircraftRouteLayer";
 
 const MapEntitiesLayer = () => {
   const { viewPort } = useViewPort();
@@ -32,7 +33,6 @@ const MapEntitiesLayer = () => {
   const handleAircraftClick = useCallback((ac: Aircraft) => {
     setSelectedAircraft((current) => {
       if (current?.id === ac.id) {
-        handleClose();
         return null;
       }
       return ac;
@@ -40,32 +40,52 @@ const MapEntitiesLayer = () => {
   }, []);
 
   const layers = useMemo(() => {
-    if (animatedAircraft.length === 0) {
-      return [];
+    const layerList = [];
+
+    if (selectedAircraft) {
+      const liveAircraft = animatedAircraft.find(
+        (aircraft) => aircraft.id === selectedAircraft.id,
+      );
+
+      const routeLayer = createAircraftRouteLayer(
+        selectedAircraft,
+        liveAircraft,
+      );
+
+      if (routeLayer) {
+        layerList.push(...routeLayer);
+      }
     }
 
-    return createAircraftIconLayer(animatedAircraft, {
-      iconSize: 30,
-      pickable: true,
-      showAltitude: false,
-      onAircraftClick: handleAircraftClick,
-    });
-  }, [animatedAircraft, handleAircraftClick]);
+    if (animatedAircraft.length > 0) {
+      const iconLayers = createAircraftIconLayer(animatedAircraft, {
+        iconSize: 30,
+        pickable: true,
+        showAltitude: false,
+        onAircraftClick: handleAircraftClick,
+        selectedAircraftId: selectedAircraft?.id ?? null,
+      });
 
-  const a = useMemo(() => {
+      if (Array.isArray(iconLayers)) {
+        layerList.push(...iconLayers);
+      } else if (iconLayers) {
+        layerList.push(iconLayers);
+      }
+    }
+
+    return layerList;
+  }, [selectedAircraft, animatedAircraft, handleAircraftClick]);
+
+  const FlightPopperComponent = useMemo(() => {
     return (
-      <FlightTrackerMapOverlay
-        selectedAircraft={selectedAircraft}
-        onClose={handleClose}
-      />
+      <FlightPopper selectedAircraft={selectedAircraft} onClose={handleClose} />
     );
-  }, [selectedAircraft]);
+  }, [selectedAircraft, handleClose]);
 
   return (
     <>
       <DeckGLOverlay layers={layers} />
-
-      {a}
+      {FlightPopperComponent}
     </>
   );
 };

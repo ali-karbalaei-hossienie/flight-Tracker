@@ -8,7 +8,10 @@ import {
   Divider,
   Grid,
   CircularProgress,
+  alpha,
+  useTheme,
 } from "@mui/material";
+
 import CloseIcon from "@mui/icons-material/Close";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
@@ -20,13 +23,17 @@ import IosShareIcon from "@mui/icons-material/IosShare";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 
+import SimpleImageSlider from "react-simple-image-slider";
+
 export interface FlightInfo {
   callsign: string;
   flightNumber: string;
   aircraftModel: string;
   airline: string;
-  photoUrl: string;
+
+  photos: string[];
   photographer: string;
+
   origin: {
     iata: string;
     city: string;
@@ -34,6 +41,7 @@ export interface FlightInfo {
     scheduledTime: string;
     actualTime: string;
   };
+
   destination: {
     iata: string;
     city: string;
@@ -41,12 +49,13 @@ export interface FlightInfo {
     scheduledTime: string;
     estimatedTime: string;
   };
+
   progress: {
-    percentage: number; // 0 تا 100
-    coveredDistance: string; // "727 km"
-    elapsedTime: string; // "00:54 ago"
-    remainingDistance: string; // "1,723 km"
-    remainingTime: string; // "in 02:07"
+    percentage: number;
+    coveredDistance: string;
+    elapsedTime: string;
+    remainingDistance: string;
+    remainingTime: string;
   };
 }
 
@@ -55,6 +64,7 @@ interface FlightRadarCardProps {
   onClose?: () => void;
   onFollow?: () => void;
   onRouteToggle?: () => void;
+  loading?: boolean;
 }
 
 export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
@@ -62,24 +72,28 @@ export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
   onClose,
   onFollow,
   onRouteToggle,
-  loading,
+  loading = false,
 }) => {
+  const theme = useTheme();
+
   return (
     <Paper
       elevation={8}
       sx={{
         width: 360,
         maxWidth: "100vw",
-        bgcolor: "#22252a",
-        color: "#fff",
+        position: "relative",
+        bgcolor: "background.paper",
+        color: "text.primary",
         borderRadius: 2,
         overflow: "hidden",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.45)",
-        fontFamily: "Roboto, sans-serif",
+        boxShadow: (t) => `0 8px 32px ${alpha(t.palette.common.black, 0.45)}`,
         userSelect: "none",
       }}
     >
-      {/* ─── Header: Callsign & Controls ─── */}
+      {/* =========================================================
+          Header
+      ========================================================= */}
       <Box
         sx={{
           p: 1.5,
@@ -87,16 +101,26 @@ export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "flex-start",
-          bgcolor: "#1a1c1e",
+          bgcolor: (t) =>
+            t.palette.mode === "dark"
+              ? alpha(t.palette.common.black, 0.3)
+              : alpha(t.palette.action.hover, 0.08),
         }}
       >
         <Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              mb: 0.5,
+            }}
+          >
             <Typography
               variant="h6"
               sx={{
                 fontWeight: 800,
-                color: "#ffc800",
+                color: "primary.main",
                 letterSpacing: 0.8,
                 lineHeight: 1.1,
               }}
@@ -111,11 +135,12 @@ export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
                 height: 20,
                 fontSize: "0.72rem",
                 fontWeight: 700,
-                bgcolor: "#34383f",
-                color: "#e0e0e0",
+                bgcolor: "action.selected",
+                color: "text.primary",
                 borderRadius: 0.75,
               }}
             />
+
             <Chip
               label={data.aircraftModel}
               size="small"
@@ -123,118 +148,166 @@ export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
                 height: 20,
                 fontSize: "0.72rem",
                 fontWeight: 700,
-                bgcolor: "#194d6e",
-                color: "#89d7ff",
+                bgcolor: (t) => alpha(t.palette.primary.main, 0.15),
+                color: "primary.main",
                 borderRadius: 0.75,
               }}
             />
           </Box>
+
           <Typography
             variant="body2"
-            sx={{ color: "#b0b3b8", fontSize: "0.85rem" }}
+            sx={{
+              color: "text.secondary",
+              fontSize: "0.85rem",
+            }}
           >
             {data.airline}
           </Typography>
         </Box>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <IconButton size="small" sx={{ color: "#e0c068" }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 0.5,
+          }}
+        >
+          <IconButton
+            size="small"
+            sx={{
+              color: "primary.main",
+            }}
+          >
             <StarBorderIcon fontSize="small" />
           </IconButton>
+
           <IconButton
             size="small"
             onClick={onClose}
-            sx={{ color: "#aaa", "&:hover": { color: "#fff" } }}
+            sx={{
+              color: "text.secondary",
+              "&:hover": {
+                color: "text.primary",
+              },
+            }}
           >
             <CloseIcon fontSize="small" />
           </IconButton>
         </Box>
       </Box>
 
-      {/* ─── Plane Image Section ─── */}
+      {/* =========================================================
+          Aircraft Image Slider
+      ========================================================= */}
       <Box
         sx={{
           position: "relative",
           width: "100%",
           height: 180,
-          bgcolor: "#000",
+          bgcolor: "common.black",
+          overflow: "hidden",
+
+          // react-simple-image-slider کلاس‌های داخلی دارد.
+          // اینجا ظاهر تصویر را کنترل می‌کنیم.
+          "& .rsis-container": {
+            width: "100% !important",
+            height: "180px !important",
+          },
+
+          "& .rsis-image": {
+            backgroundSize: "cover !important",
+            backgroundPosition: "center !important",
+          },
         }}
       >
-        <Box
-          component="img"
-          src={data.photoUrl}
-          alt={data.aircraftModel}
-          sx={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            display: "block",
-          }}
+        <SimpleImageSlider
+          width={360}
+          height={180}
+          images={data.photos.map((url) => ({
+            url,
+          }))}
+          showBullets
+          showNavs
+          navStyle={2}
+          navSize={28}
+          navMargin={12}
+          slideDuration={0.4}
+          autoPlay={true}
+          loop
+          useGPURender
+          bgColor={theme.palette.common.black}
         />
 
-        {/* Image Credits & Indicators */}
+        {/* =====================================================
+            Image Overlay
+        ===================================================== */}
         <Box
           sx={{
             position: "absolute",
             bottom: 0,
             left: 0,
             right: 0,
-            background:
-              "linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)",
+            zIndex: 2,
+            pointerEvents: "none",
+
+            background: (t) =>
+              `linear-gradient(
+                to top,
+                ${alpha(t.palette.common.black, 0.8)} 0%,
+                transparent 100%
+              )`,
+
             px: 1.5,
-            py: 0.8,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            py: 1,
           }}
         >
           <Typography
             variant="caption"
-            sx={{ color: "#f0f0f0", fontSize: "0.75rem" }}
+            sx={{
+              color: "common.white",
+              fontSize: "0.75rem",
+            }}
           >
             © {data.photographer}
           </Typography>
-
-          {/* Dots slider indicators */}
-          <Box sx={{ display: "flex", gap: 0.6, alignItems: "center" }}>
-            <Box
-              sx={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                bgcolor: "#ffc800",
-              }}
-            />
-            <Box
-              sx={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                bgcolor: "rgba(255,255,255,0.4)",
-              }}
-            />
-            <Box
-              sx={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                bgcolor: "rgba(255,255,255,0.4)",
-              }}
-            />
-          </Box>
-
-          <IconButton
-            size="small"
-            sx={{ p: 0.2, color: "rgba(255,255,255,0.7)" }}
-          >
-            <OpenInNewIcon sx={{ fontSize: 16 }} />
-          </IconButton>
         </Box>
+
+        {/* Open Image */}
+        <IconButton
+          size="small"
+          sx={{
+            position: "absolute",
+            right: 8,
+            bottom: 8,
+            zIndex: 5,
+            color: "common.white",
+            backgroundColor: alpha(theme.palette.common.black, 0.45),
+
+            "&:hover": {
+              backgroundColor: alpha(theme.palette.common.black, 0.7),
+            },
+          }}
+        >
+          <OpenInNewIcon sx={{ fontSize: 16 }} />
+        </IconButton>
       </Box>
 
-      {/* ─── Route & Schedule Box (Light Theme Container) ─── */}
-      <Box sx={{ bgcolor: "#eceff2", color: "#1a1c1e", p: 2 }}>
-        {/* Origin / Plane Icon / Destination */}
+      {/* =========================================================
+          Route & Schedule
+      ========================================================= */}
+      <Box
+        sx={{
+          bgcolor: (t) =>
+            t.palette.mode === "dark"
+              ? alpha(t.palette.background.default, 0.6)
+              : t.palette.background.default,
+
+          color: "text.primary",
+          p: 2,
+        }}
+      >
+        {/* Origin / Plane / Destination */}
         <Box
           sx={{
             display: "flex",
@@ -243,49 +316,66 @@ export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
           }}
         >
           {/* Origin */}
-          <Box sx={{ textAlign: "left", flex: 1 }}>
+          <Box
+            sx={{
+              textAlign: "left",
+              flex: 1,
+            }}
+          >
             <Typography
               variant="h4"
-              sx={{ fontWeight: 800, color: "#1a1c1e", lineHeight: 1 }}
+              sx={{
+                fontWeight: 800,
+                color: "text.primary",
+                lineHeight: 1,
+              }}
             >
               {data.origin.iata}
             </Typography>
+
             <Typography
               variant="body2"
               sx={{
                 fontWeight: 700,
                 mt: 0.5,
                 fontSize: "0.8rem",
-                color: "#333",
+                color: "text.secondary",
               }}
             >
               {data.origin.city}
             </Typography>
+
             <Typography
               variant="caption"
-              sx={{ color: "#777", fontSize: "0.7rem" }}
+              sx={{
+                color: "text.secondary",
+                opacity: 0.8,
+                fontSize: "0.7rem",
+              }}
             >
               {data.origin.timezone}
             </Typography>
           </Box>
 
-          {/* Plane Animated / Centered Icon */}
+          {/* Plane */}
           <Box
             sx={{
               width: 44,
               height: 44,
               borderRadius: "50%",
-              bgcolor: "#fff",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+              bgcolor: "background.paper",
+              boxShadow: (t) =>
+                `0 2px 8px ${alpha(t.palette.common.black, 0.15)}`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               mx: 1.5,
+              flexShrink: 0,
             }}
           >
             <FlightIcon
               sx={{
-                color: "#f2b705",
+                color: "primary.main",
                 transform: "rotate(90deg)",
                 fontSize: 26,
               }}
@@ -293,80 +383,162 @@ export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
           </Box>
 
           {/* Destination */}
-          <Box sx={{ textAlign: "right", flex: 1 }}>
+          <Box
+            sx={{
+              textAlign: "right",
+              flex: 1,
+            }}
+          >
             <Typography
               variant="h4"
-              sx={{ fontWeight: 800, color: "#1a1c1e", lineHeight: 1 }}
+              sx={{
+                fontWeight: 800,
+                color: "text.primary",
+                lineHeight: 1,
+              }}
             >
               {data.destination.iata}
             </Typography>
+
             <Typography
               variant="body2"
               sx={{
                 fontWeight: 700,
                 mt: 0.5,
                 fontSize: "0.8rem",
-                color: "#333",
+                color: "text.secondary",
               }}
             >
               {data.destination.city}
             </Typography>
+
             <Typography
               variant="caption"
-              sx={{ color: "#777", fontSize: "0.7rem" }}
+              sx={{
+                color: "text.secondary",
+                opacity: 0.8,
+                fontSize: "0.7rem",
+              }}
             >
               {data.destination.timezone}
             </Typography>
           </Box>
         </Box>
 
-        <Divider sx={{ my: 1.5, borderColor: "#d3d7dc" }} />
+        <Divider
+          sx={{
+            my: 1.5,
+            borderColor: "divider",
+          }}
+        />
 
-        {/* Timetable Matrix */}
-        <Grid container spacing={1} sx={{ mb: 2 }}>
+        {/* =====================================================
+            Timetable
+        ===================================================== */}
+        <Grid
+          container
+          spacing={1}
+          sx={{
+            mb: 2,
+          }}
+        >
           {/* Origin Times */}
-          <Grid size={6} sx={{ borderRight: "1px solid #d3d7dc", pr: 1.5 }}>
+          <Grid
+            size={6}
+            sx={{
+              borderRight: 1,
+              borderColor: "divider",
+              pr: 1.5,
+            }}
+          >
             <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                mb: 0.5,
+              }}
             >
               <Typography
                 variant="caption"
-                sx={{ color: "#686f78", fontWeight: 600 }}
+                sx={{
+                  color: "text.secondary",
+                  fontWeight: 600,
+                }}
               >
                 SCHEDULED
               </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 700 }}>
+
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 700,
+                }}
+              >
                 {data.origin.scheduledTime}
               </Typography>
             </Box>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
               <Typography
                 variant="caption"
-                sx={{ color: "#686f78", fontWeight: 600 }}
+                sx={{
+                  color: "text.secondary",
+                  fontWeight: 600,
+                }}
               >
                 ACTUAL
               </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 700 }}>
+
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 700,
+                }}
+              >
                 {data.origin.actualTime}
               </Typography>
             </Box>
           </Grid>
 
           {/* Destination Times */}
-          <Grid size={6} sx={{ pl: 1.5 }}>
+          <Grid
+            size={6}
+            sx={{
+              pl: 1.5,
+            }}
+          >
             <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                mb: 0.5,
+              }}
             >
               <Typography
                 variant="caption"
-                sx={{ color: "#686f78", fontWeight: 600 }}
+                sx={{
+                  color: "text.secondary",
+                  fontWeight: 600,
+                }}
               >
                 SCHEDULED
               </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 700 }}>
+
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 700,
+                }}
+              >
                 {data.destination.scheduledTime}
               </Typography>
             </Box>
+
             <Box
               sx={{
                 display: "flex",
@@ -376,17 +548,34 @@ export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
             >
               <Typography
                 variant="caption"
-                sx={{ color: "#686f78", fontWeight: 600 }}
+                sx={{
+                  color: "text.secondary",
+                  fontWeight: 600,
+                }}
               >
                 ESTIMATED
               </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.5,
+                }}
+              >
                 <FiberManualRecordIcon
-                  sx={{ fontSize: 10, color: "#2e7d32" }}
+                  sx={{
+                    fontSize: 10,
+                    color: "success.main",
+                  }}
                 />
+
                 <Typography
                   variant="body2"
-                  sx={{ fontWeight: 700, color: "#1b5e20" }}
+                  sx={{
+                    fontWeight: 700,
+                    color: "success.main",
+                  }}
                 >
                   {data.destination.estimatedTime}
                 </Typography>
@@ -395,15 +584,24 @@ export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
           </Grid>
         </Grid>
 
-        {/* ─── Flight Progress Bar with Airplane Needle ─── */}
-        <Box sx={{ mt: 2, position: "relative" }}>
-          {/* Progress track */}
+        {/* =====================================================
+            Flight Progress
+        ===================================================== */}
+        <Box
+          sx={{
+            mt: 2,
+            position: "relative",
+          }}
+        >
           <Box
             sx={{
               position: "relative",
               width: "100%",
               height: 6,
-              bgcolor: "#d1d5db",
+              bgcolor: (t) =>
+                t.palette.mode === "dark"
+                  ? alpha(t.palette.common.white, 0.12)
+                  : alpha(t.palette.common.black, 0.12),
               borderRadius: 3,
             }}
           >
@@ -411,35 +609,57 @@ export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
               sx={{
                 width: `${data.progress.percentage}%`,
                 height: "100%",
-                bgcolor: "#f5a623",
+                bgcolor: "primary.main",
                 borderRadius: 3,
+                transition: "width 300ms ease",
               }}
             />
-            {/* Plane marker on the bar */}
+
+            {/* Plane marker */}
             <Box
               sx={{
                 position: "absolute",
                 left: `calc(${data.progress.percentage}% - 10px)`,
                 top: -8,
-                color: "#555",
+                color: "text.secondary",
                 transform: "rotate(90deg)",
+                transition: "left 300ms ease",
               }}
             >
-              <FlightIcon sx={{ fontSize: 20 }} />
+              <FlightIcon
+                sx={{
+                  fontSize: 20,
+                }}
+              />
             </Box>
           </Box>
 
-          {/* Distance and Time info */}
-          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+          {/* Distance / Time */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              mt: 1,
+            }}
+          >
             <Typography
               variant="caption"
-              sx={{ color: "#555", fontWeight: 600, fontSize: "0.72rem" }}
+              sx={{
+                color: "text.secondary",
+                fontWeight: 600,
+                fontSize: "0.72rem",
+              }}
             >
               {data.progress.coveredDistance}, {data.progress.elapsedTime}
             </Typography>
+
             <Typography
               variant="caption"
-              sx={{ color: "#555", fontWeight: 600, fontSize: "0.72rem" }}
+              sx={{
+                color: "text.secondary",
+                fontWeight: 600,
+                fontSize: "0.72rem",
+              }}
             >
               {data.progress.remainingDistance}, {data.progress.remainingTime}
             </Typography>
@@ -447,32 +667,49 @@ export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
         </Box>
       </Box>
 
-      {/* ─── Bottom Actions Bar ─── */}
+      {/* =========================================================
+          Bottom Actions
+      ========================================================= */}
       <Box
         sx={{
-          bgcolor: "#191c20",
+          bgcolor: (t) =>
+            t.palette.mode === "dark"
+              ? alpha(t.palette.common.black, 0.4)
+              : alpha(t.palette.action.hover, 0.05),
+
           py: 1,
           px: 0.5,
+
           display: "flex",
           justifyContent: "space-around",
           alignItems: "center",
-          borderTop: "1px solid #2a2e35",
+
+          borderTop: 1,
+          borderColor: "divider",
         }}
       >
         <ActionButton icon={<ViewInArIcon />} label="3D view" />
+
         <ActionButton
           icon={<AltRouteIcon />}
           label="Route"
           onClick={onRouteToggle}
         />
+
         <ActionButton
           icon={<CenterFocusStrongIcon />}
           label="Follow"
           onClick={onFollow}
         />
+
         <ActionButton icon={<IosShareIcon />} label="Share" />
+
         <ActionButton icon={<MoreHorizIcon />} label="More" />
       </Box>
+
+      {/* =========================================================
+          Loading Overlay
+      ========================================================= */}
       {loading && (
         <Box
           sx={{
@@ -484,7 +721,8 @@ export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
             alignItems: "center",
             justifyContent: "center",
 
-            backgroundColor: "rgba(0, 0, 0, 0.35)",
+            backgroundColor: (t) => alpha(t.palette.background.paper, 0.7),
+
             backdropFilter: "blur(2px)",
           }}
         >
@@ -492,7 +730,7 @@ export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
             size={28}
             thickness={4}
             sx={{
-              color: "#ffc800",
+              color: "primary.main",
             }}
           />
         </Box>
@@ -501,7 +739,10 @@ export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
   );
 };
 
-// کامپوننت کمکی دکمه‌های فوتر
+/* ===============================================================
+   Action Button
+================================================================ */
+
 const ActionButton: React.FC<{
   icon: React.ReactNode;
   label: string;
@@ -513,20 +754,44 @@ const ActionButton: React.FC<{
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
+
       cursor: "pointer",
+
+      color: "text.secondary",
       opacity: 0.85,
-      transition: "opacity 0.2s",
-      "&:hover": { opacity: 1, color: "#ffc800" },
+
+      transition: (t) =>
+        t.transitions.create(["opacity", "color"], {
+          duration: t.transitions.duration.shorter,
+        }),
+
+      "&:hover": {
+        opacity: 1,
+        color: "primary.main",
+      },
+
       minWidth: 52,
     }}
   >
     {React.cloneElement(
-      icon as React.ReactElement<{ sx?: Record<string, unknown> }>,
+      icon as React.ReactElement<{
+        sx?: Record<string, unknown>;
+      }>,
       {
-        sx: { fontSize: 20, mb: 0.3 },
+        sx: {
+          fontSize: 20,
+          mb: 0.3,
+        },
       },
     )}
-    <Typography variant="caption" sx={{ fontSize: "0.68rem", fontWeight: 500 }}>
+
+    <Typography
+      variant="caption"
+      sx={{
+        fontSize: "0.68rem",
+        fontWeight: 500,
+      }}
+    >
       {label}
     </Typography>
   </Box>

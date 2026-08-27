@@ -1,5 +1,6 @@
 import { IconLayer, TextLayer } from "@deck.gl/layers";
 import type { Layer } from "@deck.gl/core";
+
 import type { Aircraft } from "../../../../../services/types";
 
 interface CreateAircraftLayerOptions {
@@ -10,9 +11,14 @@ interface CreateAircraftLayerOptions {
   iconSize?: number;
   showAltitude?: boolean;
   pickable?: boolean;
+  selectedAircraftId?: string | number | null;
 }
 
-const aircraftSVG = `
+/* -------------------------------------------------------------------------- */
+/*                                Aircraft SVG                                */
+/* -------------------------------------------------------------------------- */
+
+const createAircraftSVG = (color: string) => `
 <svg xmlns="http://www.w3.org/2000/svg"
   width="100"
   height="100"
@@ -26,17 +32,27 @@ const aircraftSVG = `
       width="200%"
       height="200%"
     >
-      <feOffset dx="0" dy="2" result="offset-blur"/>
-      <feGaussianBlur in="offset-blur" stdDeviation="2" result="blur"/>
+      <feOffset
+        dx="0"
+        dy="2"
+        result="offset-blur"
+      />
+
+      <feGaussianBlur
+        in="offset-blur"
+        stdDeviation="2"
+        result="blur"
+      />
 
       <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
       </feMerge>
     </filter>
   </defs>
 
   <g filter="url(#shadow)">
+
     <path
       d="
         M 50 10
@@ -63,7 +79,7 @@ const aircraftSVG = `
         C 44 14, 46 10, 50 10
         Z
       "
-      fill="#f2fa0a"
+      fill="${color}"
       stroke="#94a3b8"
       stroke-width="1.5"
       stroke-linejoin="round"
@@ -88,7 +104,13 @@ const aircraftSVG = `
     />
 
     <path
-      d="M 46.5 19 Q 50 16 53.5 19 L 52.5 21 Q 50 18.5 47.5 21 Z"
+      d="
+        M 46.5 19
+        Q 50 16 53.5 19
+        L 52.5 21
+        Q 50 18.5 47.5 21
+        Z
+      "
       fill="#1e293b"
     />
 
@@ -116,12 +138,41 @@ const aircraftSVG = `
       points="49,80 51,80 51,97 49,97"
       fill="#64748b"
     />
+
   </g>
 </svg>
 `;
 
-const iconUrl =
-  "data:image/svg+xml;charset=utf-8," + encodeURIComponent(aircraftSVG);
+/* -------------------------------------------------------------------------- */
+/*                              Aircraft Icons                                */
+/* -------------------------------------------------------------------------- */
+
+const yellowAircraftUrl =
+  "data:image/svg+xml;charset=utf-8," +
+  encodeURIComponent(createAircraftSVG("#f2fa0a"));
+
+const redAircraftUrl =
+  "data:image/svg+xml;charset=utf-8," +
+  encodeURIComponent(createAircraftSVG("#ef4444"));
+
+/* -------------------------------------------------------------------------- */
+/*                              Icon Mapping                                  */
+/* -------------------------------------------------------------------------- */
+
+const aircraftIconMapping = {
+  plane: {
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 100,
+    anchorX: 50,
+    anchorY: 50,
+  },
+};
+
+/* -------------------------------------------------------------------------- */
+/*                         Create Aircraft Icon Layer                         */
+/* -------------------------------------------------------------------------- */
 
 export function createAircraftIconLayer(
   data: Aircraft[],
@@ -133,60 +184,133 @@ export function createAircraftIconLayer(
     iconSize = 30,
     showAltitude = true,
     pickable = true,
+    selectedAircraftId = null,
   } = options;
 
-  const layers: Layer[] = [
-    new IconLayer({
-      id: "aircraft-icon-layer",
+  /*
+   * Split aircraft into:
+   *
+   * 1. Normal aircraft -> yellow
+   * 2. Selected aircraft -> red
+   */
 
-      data,
+  const normalAircraft = data.filter(
+    (aircraft) => aircraft.id !== selectedAircraftId,
+  );
 
-      pickable,
+  const selectedAircraft = data.filter(
+    (aircraft) => aircraft.id === selectedAircraftId,
+  );
 
-      iconAtlas: iconUrl,
+  const layers: Layer[] = [];
 
-      iconMapping: {
-        plane: {
-          x: 0,
-          y: 0,
-          width: 100,
-          height: 100,
-          anchorX: 50,
-          anchorY: 50,
+  /* ------------------------------------------------------------------------ */
+  /*                          Normal Aircraft Layer                           */
+  /* ------------------------------------------------------------------------ */
+
+  if (normalAircraft.length > 0) {
+    layers.push(
+      new IconLayer({
+        id: "aircraft-icon-layer",
+
+        data: normalAircraft,
+
+        pickable,
+
+        iconAtlas: yellowAircraftUrl,
+
+        iconMapping: aircraftIconMapping,
+
+        getIcon: () => "plane",
+
+        getPosition: (aircraft) => [
+          aircraft.lon,
+          aircraft.lat,
+          aircraft.altitude_ft,
+        ],
+
+        sizeUnits: "pixels",
+
+        getSize: iconSize,
+
+        getAngle: (aircraft) => -(aircraft.heading_deg || 0),
+
+        billboard: false,
+
+        autoHighlight: true,
+
+        onHover: (info) => {
+          onAircraftHover?.((info.object as Aircraft) ?? null);
         },
-      },
 
-      getIcon: () => "plane",
+        onClick: (info, event) => {
+          if (info.object) {
+            onAircraftClick?.(info.object as Aircraft, info.x, info.y);
+          }
 
-      getPosition: (d) => [d.lon, d.lat, d.altitude_ft],
+          event?.srcEvent?.stopPropagation();
 
-      sizeUnits: "pixels",
+          return true;
+        },
+      }),
+    );
+  }
 
-      getSize: iconSize,
+  /* ------------------------------------------------------------------------ */
+  /*                         Selected Aircraft Layer                          */
+  /* ------------------------------------------------------------------------ */
 
-      getAngle: (d) => -(d.heading_deg || 0),
+  if (selectedAircraft.length > 0) {
+    layers.push(
+      new IconLayer({
+        id: "aircraft-selected-icon-layer",
 
-      billboard: false,
+        data: selectedAircraft,
 
-      autoHighlight: true,
+        pickable,
 
-      highlightColor: [242, 250, 10, 200],
+        iconAtlas: redAircraftUrl,
 
-      onHover: (info) => {
-        onAircraftHover?.((info.object as Aircraft) ?? null);
-      },
+        iconMapping: aircraftIconMapping,
 
-      onClick: (info, event) => {
-        if (info.object) {
-          onAircraftClick?.(info.object as Aircraft, info.x, info.y);
-        }
+        getIcon: () => "plane",
 
-        event?.srcEvent?.stopPropagation();
+        getPosition: (aircraft) => [
+          aircraft.lon,
+          aircraft.lat,
+          aircraft.altitude_ft,
+        ],
 
-        return true;
-      },
-    }),
-  ];
+        sizeUnits: "pixels",
+
+        getSize: iconSize,
+
+        getAngle: (aircraft) => -(aircraft.heading_deg || 0),
+
+        billboard: false,
+
+        autoHighlight: false,
+
+        onHover: (info) => {
+          onAircraftHover?.((info.object as Aircraft) ?? null);
+        },
+
+        onClick: (info, event) => {
+          if (info.object) {
+            onAircraftClick?.(info.object as Aircraft, info.x, info.y);
+          }
+
+          event?.srcEvent?.stopPropagation();
+
+          return true;
+        },
+      }),
+    );
+  }
+
+  /* ------------------------------------------------------------------------ */
+  /*                           Altitude Layer                                 */
+  /* ------------------------------------------------------------------------ */
 
   if (showAltitude) {
     layers.push(
@@ -197,9 +321,13 @@ export function createAircraftIconLayer(
 
         pickable: false,
 
-        getPosition: (d) => [d.lon, d.lat, d.altitude_ft],
+        getPosition: (aircraft) => [
+          aircraft.lon,
+          aircraft.lat,
+          aircraft.altitude_ft,
+        ],
 
-        getText: (d) => `${d.altitude_ft.toLocaleString()} ft`,
+        getText: (aircraft) => `${aircraft.altitude_ft.toLocaleString()} ft`,
 
         getSize: 12,
 
