@@ -12,6 +12,7 @@ export interface BaseAircraft {
   destination_city: string;
   path: [number, number][];
   lastUpdate: string;
+  on_ground?: boolean;
 }
 
 export interface AircraftQueryParams {
