@@ -1,24 +1,20 @@
-import { useMemo, useState, useCallback } from "react";
 import { keepPreviousData } from "@tanstack/react-query";
+import { useCallback, useMemo, useState } from "react";
 
 import DeckGLOverlay from "../../../../components/map/components/DeckGLOverlay/DeckGLOverlay";
 import { useAircraftListQuery } from "../../../../hooks/useAircraftQueries";
-import { useViewPort } from "../AircraftLayer/hooks/useViewPort";
-import { useAircraftSimulation } from "../AircraftLayer/hooks/useAircraftSimulation";
-import { createAircraftIconLayer } from "../AircraftLayer/layers/createAircraftLayer";
-import { AircraftPopper } from "../AircraftPopup/AircraftPopper";
 import type { Aircraft } from "../../../../services/types";
-
-interface SelectedAircraftState {
-  aircraft: Aircraft;
-  x: number;
-  y: number;
-}
+import { useAircraftSimulation } from "../AircraftLayer/hooks/useAircraftSimulation";
+import { useViewPort } from "../AircraftLayer/hooks/useViewPort";
+import { createAircraftIconLayer } from "../AircraftLayer/layers/createAircraftLayer";
+import { FlightTrackerMapOverlay } from "../FlightTrackerMapOverlay/FlightTrackerMapOverlay";
 
 const MapEntitiesLayer = () => {
   const { viewPort } = useViewPort();
-  const [selectedAircraft, setSelectedAircraft] =
-    useState<SelectedAircraftState | null>(null);
+
+  const [selectedAircraft, setSelectedAircraft] = useState<Aircraft | null>(
+    null,
+  );
 
   const { data } = useAircraftListQuery(viewPort, {
     placeholderData: keepPreviousData,
@@ -26,17 +22,21 @@ const MapEntitiesLayer = () => {
   });
 
   const aircraft = useMemo(() => data?.aircraft ?? [], [data?.aircraft]);
-  const animatedAircraft = useAircraftSimulation(aircraft);
 
-  const handleAircraftClick = useCallback(
-    (ac: Aircraft, x: number, y: number) => {
-      setSelectedAircraft({ aircraft: ac, x, y });
-    },
-    [],
-  );
+  const animatedAircraft = useAircraftSimulation(aircraft);
 
   const handleClose = useCallback(() => {
     setSelectedAircraft(null);
+  }, []);
+
+  const handleAircraftClick = useCallback((ac: Aircraft) => {
+    setSelectedAircraft((current) => {
+      if (current?.id === ac.id) {
+        handleClose();
+        return null;
+      }
+      return ac;
+    });
   }, []);
 
   const layers = useMemo(() => {
@@ -52,14 +52,20 @@ const MapEntitiesLayer = () => {
     });
   }, [animatedAircraft, handleAircraftClick]);
 
+  const a = useMemo(() => {
+    return (
+      <FlightTrackerMapOverlay
+        selectedAircraft={selectedAircraft}
+        onClose={handleClose}
+      />
+    );
+  }, [selectedAircraft]);
+
   return (
     <>
       <DeckGLOverlay layers={layers} />
-      <AircraftPopper
-        data={selectedAircraft}
-        onClose={handleClose}
-        onDrawTrack={(ac) => console.log("Draw track for:", ac)}
-      />
+
+      {a}
     </>
   );
 };
