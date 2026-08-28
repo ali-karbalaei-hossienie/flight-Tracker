@@ -9,22 +9,42 @@ function isMapAlive(map: MapboxMap | undefined | null): map is MapboxMap {
 }
 
 function isOverlayAttached(map: MapboxMap, overlay: MapboxOverlay) {
-  const controls = (map as MapboxMap & { _controls?: MapboxOverlay[] })
-    ._controls;
+  const controls = (
+    map as MapboxMap & {
+      _controls?: MapboxOverlay[];
+    }
+  )._controls;
+
   return Boolean(controls?.includes(overlay));
 }
 
 function attachOverlay(map: MapboxMap, layers: Layer[]) {
-  const overlay = new MapboxOverlay({ interleaved: true });
+  const overlay = new MapboxOverlay({
+    interleaved: true,
+
+    getCursor: ({ isHovering, isDragging }) => {
+      if (isDragging) {
+        return "grabbing";
+      }
+
+      return isHovering ? "pointer" : "grab";
+    },
+  });
+
   map.addControl(overlay);
-  overlay.setProps({ layers });
+
+  overlay.setProps({
+    layers,
+  });
+
   return overlay;
 }
 
 export default function DeckGLOverlay({ layers }: { layers: Layer[] }) {
   const { current: mapRef } = useMap();
-  // const mapStyleId = useAppSelector((state) => state.settings.mapStyleId);
+
   const overlayRef = useRef<MapboxOverlay | null>(null);
+
   const layersRef = useRef(layers);
 
   useEffect(() => {
@@ -33,9 +53,13 @@ export default function DeckGLOverlay({ layers }: { layers: Layer[] }) {
 
   const ensureOverlay = useCallback(() => {
     const map = mapRef?.getMap();
-    if (!isMapAlive(map)) return;
+
+    if (!isMapAlive(map)) {
+      return;
+    }
 
     const current = overlayRef.current;
+
     const needsAttach = !current || !isOverlayAttached(map, current);
 
     if (needsAttach) {
@@ -46,21 +70,30 @@ export default function DeckGLOverlay({ layers }: { layers: Layer[] }) {
           // Control may already be detached.
         }
       }
+
       overlayRef.current = attachOverlay(map, layersRef.current);
+
       return;
     }
 
-    current.setProps({ layers: layersRef.current });
+    current.setProps({
+      layers: layersRef.current,
+    });
   }, [mapRef]);
 
   useEffect(() => {
     const map = mapRef?.getMap();
-    if (!isMapAlive(map)) return;
+
+    if (!isMapAlive(map)) {
+      return;
+    }
 
     overlayRef.current = attachOverlay(map, layersRef.current);
 
     const handleResize = () => {
-      overlayRef.current?.setProps({ layers: layersRef.current });
+      overlayRef.current?.setProps({
+        layers: layersRef.current,
+      });
     };
 
     const handleStyleReady = () => {
@@ -75,13 +108,15 @@ export default function DeckGLOverlay({ layers }: { layers: Layer[] }) {
     return () => {
       map.off("resize", handleResize);
       map.off("ase:style-ready", handleStyleReady);
+
       if (overlayRef.current && isMapAlive(map)) {
         try {
           map.removeControl(overlayRef.current);
         } catch {
-          // Map may already be destroyed during route changes.
+          // Map may already be destroyed.
         }
       }
+
       overlayRef.current = null;
     };
   }, [mapRef, ensureOverlay]);
@@ -92,7 +127,10 @@ export default function DeckGLOverlay({ layers }: { layers: Layer[] }) {
 
   useEffect(() => {
     const map = mapRef?.getMap();
-    if (!isMapAlive(map)) return;
+
+    if (!isMapAlive(map)) {
+      return;
+    }
 
     const refresh = () => ensureOverlay();
 
