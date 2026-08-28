@@ -92,6 +92,7 @@ const CardHeader = ({ onClose, data }: ICardHeader) => {
         <IconButton
           size="small"
           sx={{
+            p: 0,
             color: "primary.main",
           }}
         >
@@ -102,6 +103,7 @@ const CardHeader = ({ onClose, data }: ICardHeader) => {
           size="small"
           onClick={onClose}
           sx={{
+            p: 0,
             color: "text.secondary",
             "&:hover": {
               color: "text.primary",
