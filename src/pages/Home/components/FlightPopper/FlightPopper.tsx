@@ -69,8 +69,6 @@ export const FlightPopper = ({
                 loading={loading}
                 data={flightInfo}
                 onClose={onClose}
-                onFollow={() => console.log("Follow clicked")}
-                onRouteToggle={() => console.log("Route toggled")}
               />
             </Box>
           </Slide>

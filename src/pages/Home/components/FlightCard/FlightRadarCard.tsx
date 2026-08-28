@@ -10,16 +10,13 @@ import Schedule from "./components/Schedule/Schedule";
 interface FlightRadarCardProps {
   data: FlightInfo;
   onClose: () => void;
-  onFollow?: () => void;
-  onRouteToggle?: () => void;
   loading?: boolean;
 }
 
 export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
   data,
   onClose,
-  onFollow,
-  onRouteToggle,
+
   loading = false,
 }) => {
   return (
