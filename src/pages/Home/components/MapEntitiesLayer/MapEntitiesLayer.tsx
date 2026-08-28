@@ -9,9 +9,11 @@ import { useViewPort } from "../AircraftLayer/hooks/useViewPort";
 import { createAircraftIconLayer } from "../AircraftLayer/layers/createAircraftLayer";
 import { FlightPopper } from "../FlightPopper/FlightPopper";
 import { createAircraftRouteLayer } from "../createAircraftRouteLayer/createAircraftRouteLayer";
+import { useRout } from "../hooks/useRout";
 
 const MapEntitiesLayer = () => {
   const { viewPort } = useViewPort();
+  const { isRouteActive } = useRout();
 
   const [selectedAircraft, setSelectedAircraft] = useState<Aircraft | null>(
     null,
@@ -25,6 +27,13 @@ const MapEntitiesLayer = () => {
   const aircraft = useMemo(() => data?.aircraft ?? [], [data?.aircraft]);
 
   const animatedAircraft = useAircraftSimulation(aircraft);
+
+  const visibleAircrafts = useMemo(() => {
+    if (isRouteActive && selectedAircraft) {
+      return animatedAircraft.filter((ac) => ac.id === selectedAircraft.id);
+    }
+    return animatedAircraft;
+  }, [isRouteActive, selectedAircraft, animatedAircraft]);
 
   const handleClose = useCallback(() => {
     setSelectedAircraft(null);
@@ -43,22 +52,15 @@ const MapEntitiesLayer = () => {
     const layerList = [];
 
     if (selectedAircraft) {
-      const liveAircraft = animatedAircraft.find(
-        (aircraft) => aircraft.id === selectedAircraft.id,
-      );
-
-      const routeLayer = createAircraftRouteLayer(
-        selectedAircraft,
-        liveAircraft,
-      );
+      const routeLayer = createAircraftRouteLayer(selectedAircraft);
 
       if (routeLayer) {
         layerList.push(...routeLayer);
       }
     }
 
-    if (animatedAircraft.length > 0) {
-      const iconLayers = createAircraftIconLayer(animatedAircraft, {
+    if (visibleAircrafts.length > 0) {
+      const iconLayers = createAircraftIconLayer(visibleAircrafts, {
         iconSize: 30,
         pickable: true,
         showAltitude: false,
@@ -74,7 +76,7 @@ const MapEntitiesLayer = () => {
     }
 
     return layerList;
-  }, [selectedAircraft, animatedAircraft, handleAircraftClick]);
+  }, [selectedAircraft, visibleAircrafts, handleAircraftClick]);
 
   const FlightPopperComponent = useMemo(() => {
     return (

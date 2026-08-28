@@ -5,7 +5,10 @@ import AltRouteIcon from "@mui/icons-material/AltRoute";
 import CenterFocusStrongIcon from "@mui/icons-material/CenterFocusStrong";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { useRout } from "../../../hooks/useRout";
 const CardFooter = () => {
+  const { isRouteActive, toggleRoute } = useRout();
+
   return (
     <Box
       sx={{
@@ -30,7 +33,8 @@ const CardFooter = () => {
       <ActionButton
         icon={<AltRouteIcon />}
         label="Route"
-        // onClick={onRouteToggle}
+        onClick={toggleRoute}
+        isActive={isRouteActive}
       />
 
       <ActionButton
@@ -52,18 +56,18 @@ const ActionButton: React.FC<{
   icon: React.ReactNode;
   label: string;
   onClick?: () => void;
-}> = ({ icon, label, onClick }) => (
+  isActive?: boolean;
+}> = ({ icon, label, onClick, isActive }) => (
   <Box
     onClick={onClick}
     sx={{
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-
       cursor: "pointer",
 
-      color: "text.secondary",
-      opacity: 0.85,
+      color: isActive ? "primary.main" : "text.secondary",
+      opacity: isActive ? 1 : 0.85,
 
       transition: (t) =>
         t.transitions.create(["opacity", "color"], {
@@ -79,24 +83,10 @@ const ActionButton: React.FC<{
     }}
   >
     {React.cloneElement(
-      icon as React.ReactElement<{
-        sx?: Record<string, unknown>;
-      }>,
-      {
-        sx: {
-          fontSize: 20,
-          mb: 0.3,
-        },
-      },
+      icon as React.ReactElement<{ sx?: Record<string, unknown> }>,
+      { sx: { fontSize: 20, mb: 0.3 } },
     )}
-
-    <Typography
-      variant="caption"
-      sx={{
-        fontSize: "0.68rem",
-        fontWeight: 500,
-      }}
-    >
+    <Typography variant="caption" sx={{ fontSize: "0.68rem", fontWeight: 500 }}>
       {label}
     </Typography>
   </Box>

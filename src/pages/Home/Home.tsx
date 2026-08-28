@@ -1,13 +1,16 @@
 import { Box } from "@mui/material";
 import MapBox from "../../components/map/Map";
 import MapEntitiesLayer from "./components/MapEntitiesLayer/MapEntitiesLayer";
+import { RoutProvider } from "./context/RoutContext";
 
 const Home = () => {
   return (
     <Box>
-      <MapBox>
-        <MapEntitiesLayer />
-      </MapBox>
+      <RoutProvider>
+        <MapBox>
+          <MapEntitiesLayer />
+        </MapBox>
+      </RoutProvider>
     </Box>
   );
 };

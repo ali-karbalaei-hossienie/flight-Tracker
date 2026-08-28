@@ -3,15 +3,8 @@ import type { Layer } from "@deck.gl/core";
 
 import type { Aircraft } from "../../../../services/types";
 
-interface LiveAircraft {
-  id: string | number;
-  lat: number;
-  lon: number;
-}
-
 export const createAircraftRouteLayer = (
   selectedAircraft: Aircraft,
-  liveAircraft?: LiveAircraft,
 ): Layer[] => {
   if (!selectedAircraft?.path?.length) {
     return [];
@@ -26,8 +19,8 @@ export const createAircraftRouteLayer = (
   // موقعیت فعلی هواپیما
   // -----------------------------------------
 
-  const currentPosition: [number, number] | null = liveAircraft
-    ? [liveAircraft.lon, liveAircraft.lat]
+  const currentPosition: [number, number] | null = selectedAircraft
+    ? [selectedAircraft.lon, selectedAircraft.lat]
     : null;
 
   // -----------------------------------------
@@ -109,7 +102,6 @@ export const createAircraftRouteLayer = (
 
     pickable: false,
 
-    // برای اینکه با زوم اندازه نقطه ثابت بماند
     radiusMinPixels: 7,
     radiusMaxPixels: 7,
   });
