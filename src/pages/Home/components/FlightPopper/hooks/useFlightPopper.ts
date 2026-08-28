@@ -55,6 +55,9 @@ export const useFlightPopper = ({
     return {
       callsign: selectedAircraft.callsign,
 
+      lat: selectedAircraft.lat,
+      lon: selectedAircraft.lon,
+
       flightNumber: selectedAircraft.flight_icao,
 
       aircraftModel: selectedAircraft.aircraft_icao,

@@ -52,7 +52,7 @@ export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
       {/* =========================================================
           Bottom Actions
       ========================================================= */}
-      <CardFooter />
+      <CardFooter data={data} />
 
       {/* =========================================================
           Loading Overlay

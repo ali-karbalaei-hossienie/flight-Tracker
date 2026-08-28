@@ -1,14 +1,20 @@
 import { alpha, Box, Typography } from "@mui/material";
-import React from "react";
+import React, { type FC } from "react";
 import ViewInArIcon from "@mui/icons-material/ViewInAr";
 import AltRouteIcon from "@mui/icons-material/AltRoute";
 import CenterFocusStrongIcon from "@mui/icons-material/CenterFocusStrong";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useRout } from "../../../hooks/useRout";
-const CardFooter = () => {
+import { useMap } from "react-map-gl/mapbox";
+import type { FlightInfo } from "../../../FlightPopper/hooks/types";
+const CardFooter: FC<{ data: FlightInfo }> = ({ data }) => {
   const { isRouteActive, toggleRoute } = useRout();
+  const { current: map } = useMap();
 
+  const handleFollow = () => {
+    map?.flyTo({ center: [data.lon, data.lat], zoom: 8 });
+  };
   return (
     <Box
       sx={{
@@ -40,7 +46,7 @@ const CardFooter = () => {
       <ActionButton
         icon={<CenterFocusStrongIcon />}
         label="Follow"
-        // onClick={onFollow}
+        onClick={handleFollow}
       />
 
       <ActionButton icon={<IosShareIcon />} label="Share" />
