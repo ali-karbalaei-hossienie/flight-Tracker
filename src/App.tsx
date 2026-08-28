@@ -17,6 +17,7 @@ import {
   SidebarProvider,
   type SidebarItem,
 } from "./components/utils/SidebarProvider";
+import AircraftListPage from "./pages/Aircraft/AircraftListPage";
 
 const sidebarConfig: SidebarItem[] = [
   {
@@ -48,8 +49,8 @@ function App() {
               <Routes>
                 <Route element={<AppShell />}>
                   <Route index element={null} />
-                  {/* <Route path="airplane" element={<AircraftListPage />} />
-                <Route path="airplane/:id" element={<AircraftDetailPage />} /> */}
+                  <Route path="airplane" element={<AircraftListPage />} />
+                  {/* <Route path="airplane/:id" element={<AircraftDetailPage />} /> */}
                 </Route>
               </Routes>
             </SidebarProvider>

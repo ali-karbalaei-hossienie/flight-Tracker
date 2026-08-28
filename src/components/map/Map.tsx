@@ -11,6 +11,7 @@ import FullscreenControl from "./components/FullScreen/FullScreenControl";
 import MapNavigation from "./components/MapNavigation/MapNavigation";
 import MultiMapLayers from "./components/MultiMapLayers/MultiMapLayers";
 import { registerGeoman, unregisterGeoman } from "./utils/drawStore";
+import MapActivityController from "./components/MapActivityController/MapActivityController";
 
 interface MapBoxpProps {
   children?: ReactNode;
@@ -62,6 +63,7 @@ const MapBox: FC<MapBoxpProps> = ({ children }) => {
       >
         <MapNavigation />
         <FullscreenControl />
+        <MapActivityController />
         {!isMobile && <CoordinateDisplay />}
         <Draw />
         <Edit />
