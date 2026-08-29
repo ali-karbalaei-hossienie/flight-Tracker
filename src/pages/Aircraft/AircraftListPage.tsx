@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import {
   useAircraftListQuery,
@@ -17,6 +17,7 @@ import {
   type SortDirection,
   type SortField,
 } from "./utils/aircraftFilters";
+import AircraftCard from "./components/AirCraftCard";
 
 const AircraftListPage = () => {
   const [filters, setFilters] = useState<AircraftFilters>(DEFAULT_FILTERS);
@@ -83,6 +84,13 @@ const AircraftListPage = () => {
           setSortDirection={setSortDirection}
           sortDirection={sortDirection}
         />
+        <Grid container spacing={2.5}>
+          {displayedAircraft.map((aircraft) => (
+            <Grid key={aircraft.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+              <AircraftCard aircraft={aircraft} />
+            </Grid>
+          ))}
+        </Grid>
       </Box>
     </Box>
   );

@@ -35,7 +35,6 @@ export function filterAircraft(
   filters: AircraftFilters,
 ): Aircraft[] {
   const query = filters.search.trim().toLowerCase();
-  console.log(filters);
 
   return aircraft.filter((a) => {
     if (filters.airline !== "all" && a.airline !== filters.airline) {
