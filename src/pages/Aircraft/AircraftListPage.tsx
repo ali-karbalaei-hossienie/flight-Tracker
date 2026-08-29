@@ -1,13 +1,21 @@
 import { Box } from "@mui/material";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   useAircraftListQuery,
   useFleetStatsQuery,
 } from "../../hooks/useAircraftQueries";
 import AirCraftMetric from "./components/AirCraftMetric";
 import AirCraftOverView from "./components/AirCraftOverView";
+import AircraftFiltersBar from "./components/AircraftFiltersBar";
+import {
+  DEFAULT_FILTERS,
+  getUniqueAirlines,
+  type AircraftFilters,
+} from "./utils/aircraftFilters";
 
 const AircraftListPage = () => {
+  const [filters, setFilters] = useState<AircraftFilters>(DEFAULT_FILTERS);
+
   const {
     data: aircraftResponse,
     isLoading: aircraftLoading,
@@ -29,6 +37,8 @@ const AircraftListPage = () => {
     refetchStats();
   }, [refetchAircraft, refetchStats]);
 
+  const airlines = useMemo(() => getUniqueAirlines(allAircraft), [allAircraft]);
+
   return (
     <Box
       sx={{
@@ -47,6 +57,11 @@ const AircraftListPage = () => {
           handleRefresh={handleRefresh}
         />
         <AirCraftMetric stats={stats} allAircraft={allAircraft} />
+        <AircraftFiltersBar
+          airlines={airlines}
+          filters={filters}
+          setFilters={setFilters}
+        />
       </Box>
     </Box>
   );

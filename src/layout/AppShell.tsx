@@ -16,8 +16,6 @@ export default function AppShell() {
     >
       <Box
         sx={{
-          // position: "absolute",
-          // inset: 0,
           visibility: isHome ? "visible" : "hidden",
           pointerEvents: isHome ? "auto" : "none",
         }}
@@ -28,11 +26,7 @@ export default function AppShell() {
       <Box
         sx={{
           position: "absolute",
-          // inset: 0,
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
+          inset: 0,
           zIndex: isHome ? 0 : 1000,
           bgcolor: isHome ? "transparent" : "background.default",
           overflow: isHome ? "hidden" : "auto",
