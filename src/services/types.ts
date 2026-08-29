@@ -67,3 +67,14 @@ export interface BboxParams {
   lomax?: number;
   zoom?: number;
 }
+
+export interface FleetStats {
+  total_aircraft: number;
+  airborne: number;
+  on_ground: number;
+  airlines_count: number;
+  aircraft_types_count: number;
+  avg_altitude_ft: number;
+  avg_speed_kts: number;
+  timestamp: number;
+}

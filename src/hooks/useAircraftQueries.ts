@@ -8,11 +8,12 @@ import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 //   fetchFleetStats,
 //   fetchFlightsByAircraft,
 // } from "../services/flightApi";
-import { fetchAircraftList } from "../services/flightApi";
+import { fetchAircraftList, fetchFleetStats } from "../services/flightApi";
 import type {
   // AircraftDetail,
   AircraftListResponse,
   AircraftQueryParams,
+  FleetStats,
 } from "../services/types";
 
 export const queryKeys = {
@@ -29,11 +30,10 @@ export const queryKeys = {
     history: (id: string) =>
       [...queryKeys.aircraft.all, "history", id] as const,
   },
-  // fleet: {
-  //   all: ["fleet"] as const,
-  //   stats: (bbox?: BboxParams) =>
-  //     [...queryKeys.fleet.all, "stats", bbox] as const,
-  // },
+  fleet: {
+    all: ["fleet"] as const,
+    stats: () => [...queryKeys.fleet.all, "stats"] as const,
+  },
   // airports: {
   //   all: ["airports"] as const,
   // },
@@ -54,6 +54,21 @@ export function useAircraftListQuery(
     queryFn: () => fetchAircraftList(params),
     staleTime: 0,
     refetchInterval: 10000,
+    ...options,
+  });
+}
+
+/**
+ * Hook to query fleet statistics and metrics.
+ */
+export function useFleetStatsQuery(
+  options?: Partial<UseQueryOptions<FleetStats, Error>>,
+) {
+  return useQuery<FleetStats, Error>({
+    queryKey: queryKeys.fleet.stats(),
+    queryFn: () => fetchFleetStats(),
+    staleTime: 10000,
+    refetchInterval: 15000,
     ...options,
   });
 }

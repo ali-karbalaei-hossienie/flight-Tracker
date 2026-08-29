@@ -1,5 +1,9 @@
 import apiClient from "./axiosInstance";
-import type { AircraftListResponse, AircraftQueryParams } from "./types";
+import type {
+  AircraftListResponse,
+  AircraftQueryParams,
+  FleetStats,
+} from "./types";
 
 export async function fetchAircraftList(
   params?: AircraftQueryParams,
@@ -8,5 +12,13 @@ export async function fetchAircraftList(
     params: params as Record<string, string | number | boolean | undefined>,
   });
 
+  return response.data;
+}
+
+/**
+ * Fetch summary telemetry and metrics for the active fleet
+ */
+export async function fetchFleetStats(): Promise<FleetStats> {
+  const response = await apiClient<FleetStats>("/stats");
   return response.data;
 }
