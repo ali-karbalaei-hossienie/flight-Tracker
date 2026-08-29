@@ -9,8 +9,10 @@ import AirCraftOverView from "./components/AirCraftOverView";
 import AircraftFiltersBar from "./components/AircraftFiltersBar";
 import {
   DEFAULT_FILTERS,
+  filterAircraft,
   getUniqueAirlines,
   getUniqueTypes,
+  sortAircraft,
   type AircraftFilters,
   type SortDirection,
   type SortField,
@@ -47,6 +49,11 @@ const AircraftListPage = () => {
     () => getUniqueTypes(allAircraft),
     [allAircraft],
   );
+
+  const displayedAircraft = useMemo(() => {
+    const filtered = filterAircraft(allAircraft, filters);
+    return sortAircraft(filtered, sortField, sortDirection);
+  }, [allAircraft, filters, sortField, sortDirection]);
 
   return (
     <Box
