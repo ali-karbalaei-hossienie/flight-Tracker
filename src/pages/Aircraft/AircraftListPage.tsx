@@ -12,12 +12,14 @@ import {
   getUniqueAirlines,
   getUniqueTypes,
   type AircraftFilters,
+  type SortDirection,
   type SortField,
 } from "./utils/aircraftFilters";
 
 const AircraftListPage = () => {
   const [filters, setFilters] = useState<AircraftFilters>(DEFAULT_FILTERS);
   const [sortField, setSortField] = useState<SortField>("callsign");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   const {
     data: aircraftResponse,
@@ -71,6 +73,8 @@ const AircraftListPage = () => {
           aircraftTypes={aircraftTypes}
           setSortField={setSortField}
           sortField={sortField}
+          setSortDirection={setSortDirection}
+          sortDirection={sortDirection}
         />
       </Box>
     </Box>

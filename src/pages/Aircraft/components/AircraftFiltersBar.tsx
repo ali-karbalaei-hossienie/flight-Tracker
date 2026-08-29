@@ -12,7 +12,11 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { useCallback, type Dispatch, type SetStateAction } from "react";
-import type { AircraftFilters, SortField } from "../utils/aircraftFilters";
+import type {
+  AircraftFilters,
+  SortDirection,
+  SortField,
+} from "../utils/aircraftFilters";
 
 interface AircraftFiltersBarProps {
   filters: AircraftFilters;
@@ -21,6 +25,8 @@ interface AircraftFiltersBarProps {
   aircraftTypes: string[];
   setSortField: Dispatch<SetStateAction<SortField>>;
   sortField: SortField;
+  setSortDirection: Dispatch<SetStateAction<SortDirection>>;
+  sortDirection: SortDirection;
 }
 
 const AircraftFiltersBar = ({
@@ -30,6 +36,8 @@ const AircraftFiltersBar = ({
   aircraftTypes,
   setSortField,
   sortField,
+  setSortDirection,
+  sortDirection,
 }: AircraftFiltersBarProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -125,6 +133,21 @@ const AircraftFiltersBar = ({
             <MenuItem value="altitude">Altitude</MenuItem>
             <MenuItem value="speed">Speed</MenuItem>
             <MenuItem value="lastUpdate">Last Update</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl
+          size="small"
+          fullWidth={isMobile}
+          sx={{ minWidth: isMobile ? undefined : 110 }}
+        >
+          <InputLabel>Order</InputLabel>
+          <Select
+            label="Order"
+            value={sortDirection}
+            onChange={(e) => setSortDirection(e.target.value as SortDirection)}
+          >
+            <MenuItem value="asc">Ascending</MenuItem>
+            <MenuItem value="desc">Descending</MenuItem>
           </Select>
         </FormControl>
       </Stack>

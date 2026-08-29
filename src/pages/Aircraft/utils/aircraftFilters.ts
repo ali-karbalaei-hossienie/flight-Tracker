@@ -20,6 +20,7 @@ export const DEFAULT_FILTERS: AircraftFilters = {
   minAltitude: 0,
   maxAltitude: 45000,
 };
+export type SortDirection = "asc" | "desc";
 
 export function getUniqueAirlines(aircraft: Aircraft[]): string[] {
   return [...new Set(aircraft.map((a) => a.airline))].sort();
