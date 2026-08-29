@@ -11,19 +11,25 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import React, { useCallback } from "react";
-import type { AircraftFilters } from "../utils/aircraftFilters";
+import React, { useCallback, type Dispatch, type SetStateAction } from "react";
+import type { AircraftFilters, SortField } from "../utils/aircraftFilters";
 
 interface AircraftFiltersBarProps {
   filters: AircraftFilters;
   setFilters: (filters: AircraftFilters) => void;
   airlines: string[];
+  aircraftTypes: string[];
+  setSortField: Dispatch<SetStateAction<SortField>>;
+  sortField: SortField;
 }
 
 const AircraftFiltersBar = ({
   filters,
   setFilters,
   airlines,
+  aircraftTypes,
+  setSortField,
+  sortField,
 }: AircraftFiltersBarProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -82,6 +88,43 @@ const AircraftFiltersBar = ({
                 {a}
               </MenuItem>
             ))}
+          </Select>
+        </FormControl>
+        <FormControl
+          size="small"
+          fullWidth={isMobile}
+          sx={{ minWidth: isMobile ? undefined : 130 }}
+        >
+          <InputLabel>Type</InputLabel>
+          <Select
+            label="Type"
+            value={filters.aircraftType}
+            onChange={(e) => handleChange({ aircraftType: e.target.value })}
+          >
+            <MenuItem value="all">All Types</MenuItem>
+            {aircraftTypes.map((t) => (
+              <MenuItem key={t} value={t}>
+                {t}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl
+          size="small"
+          fullWidth={isMobile}
+          sx={{ minWidth: isMobile ? undefined : 140 }}
+        >
+          <InputLabel>Sort by</InputLabel>
+          <Select
+            label="Sort by"
+            value={sortField}
+            onChange={(e) => setSortField(e.target.value as SortField)}
+          >
+            <MenuItem value="callsign">Callsign</MenuItem>
+            <MenuItem value="airline">Airline</MenuItem>
+            <MenuItem value="altitude">Altitude</MenuItem>
+            <MenuItem value="speed">Speed</MenuItem>
+            <MenuItem value="lastUpdate">Last Update</MenuItem>
           </Select>
         </FormControl>
       </Stack>

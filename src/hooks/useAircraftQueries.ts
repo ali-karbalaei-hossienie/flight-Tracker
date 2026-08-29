@@ -53,7 +53,6 @@ export function useAircraftListQuery(
     queryKey: queryKeys.aircraft.list(params),
     queryFn: () => fetchAircraftList(params),
     staleTime: 0,
-    refetchInterval: 10000,
     ...options,
   });
 }

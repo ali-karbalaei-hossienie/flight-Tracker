@@ -10,16 +10,20 @@ import { createAircraftIconLayer } from "../AircraftLayer/layers/createAircraftL
 import { FlightPopper } from "../FlightPopper/FlightPopper";
 import { createAircraftRouteLayer } from "../createAircraftRouteLayer/createAircraftRouteLayer";
 import { useRout } from "../hooks/useRout";
+import { useLocation } from "react-router-dom";
 
 const MapEntitiesLayer = () => {
   const { viewPort } = useViewPort();
   const { isRouteActive } = useRout();
+  const { pathname } = useLocation();
+  const isHome = pathname === "/";
 
   const [selectedAircraft, setSelectedAircraft] = useState<Aircraft | null>(
     null,
   );
 
   const { data } = useAircraftListQuery(viewPort, {
+    enabled: isHome ? true : false,
     placeholderData: keepPreviousData,
     refetchInterval: 10_000,
   });

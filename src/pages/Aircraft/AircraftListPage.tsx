@@ -10,11 +10,14 @@ import AircraftFiltersBar from "./components/AircraftFiltersBar";
 import {
   DEFAULT_FILTERS,
   getUniqueAirlines,
+  getUniqueTypes,
   type AircraftFilters,
+  type SortField,
 } from "./utils/aircraftFilters";
 
 const AircraftListPage = () => {
   const [filters, setFilters] = useState<AircraftFilters>(DEFAULT_FILTERS);
+  const [sortField, setSortField] = useState<SortField>("callsign");
 
   const {
     data: aircraftResponse,
@@ -38,6 +41,10 @@ const AircraftListPage = () => {
   }, [refetchAircraft, refetchStats]);
 
   const airlines = useMemo(() => getUniqueAirlines(allAircraft), [allAircraft]);
+  const aircraftTypes = useMemo(
+    () => getUniqueTypes(allAircraft),
+    [allAircraft],
+  );
 
   return (
     <Box
@@ -61,6 +68,9 @@ const AircraftListPage = () => {
           airlines={airlines}
           filters={filters}
           setFilters={setFilters}
+          aircraftTypes={aircraftTypes}
+          setSortField={setSortField}
+          sortField={sortField}
         />
       </Box>
     </Box>

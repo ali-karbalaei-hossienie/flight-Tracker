@@ -1,5 +1,10 @@
 import type { Aircraft } from "../../../services/types";
-
+export type SortField =
+  | "callsign"
+  | "airline"
+  | "altitude"
+  | "speed"
+  | "lastUpdate";
 export interface AircraftFilters {
   search: string;
   airline: string;
@@ -18,4 +23,8 @@ export const DEFAULT_FILTERS: AircraftFilters = {
 
 export function getUniqueAirlines(aircraft: Aircraft[]): string[] {
   return [...new Set(aircraft.map((a) => a.airline))].sort();
+}
+
+export function getUniqueTypes(aircraft: Aircraft[]): string[] {
+  return [...new Set(aircraft.map((a) => a.aircraftType))].sort();
 }
