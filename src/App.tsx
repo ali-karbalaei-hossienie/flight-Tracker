@@ -1,24 +1,23 @@
+import {
+  AirplanemodeActive,
+  BookmarkBorder,
+  HomeOutlined,
+} from "@mui/icons-material";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { MapProvider } from "react-map-gl/mapbox";
 import { Provider } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import { store } from "./app/store";
-import AppShell from "./layout/AppShell";
-import { getDesignTokens } from "./theme/theme";
-import {
-  AirplanemodeActive,
-  HomeOutlined,
-  Layers,
-  Route as RouteIcon,
-  Settings,
-} from "@mui/icons-material";
+import Bookmark from "./components/Bookmark/Bookmark";
 import {
   SidebarProvider,
   type SidebarItem,
 } from "./components/utils/SidebarProvider";
+import AppShell from "./layout/AppShell";
 import AircraftListPage from "./pages/Aircraft/AircraftListPage";
 import AircraftDetailPage from "./pages/AircraftDetailPage/AircraftDetailPage";
+import { getDesignTokens } from "./theme/theme";
 
 const sidebarConfig: SidebarItem[] = [
   {
@@ -34,6 +33,13 @@ const sidebarConfig: SidebarItem[] = [
     position: "top",
     navigate: "/airplane",
     icon: <AirplanemodeActive />,
+  },
+  {
+    id: "bookmark",
+    textButton: "Bookmark",
+    position: "top",
+    icon: <BookmarkBorder />,
+    component: <Bookmark />,
   },
 ];
 
