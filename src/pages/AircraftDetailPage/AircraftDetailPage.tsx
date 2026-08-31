@@ -3,7 +3,6 @@ import {
   ArrowBack,
   Explore,
   Flight,
-  FlightLand,
   FlightTakeoff,
   History,
   LocationOn,
@@ -32,12 +31,12 @@ import {
 import { useCallback, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import type { AircraftDetail } from "../../services/types";
 import {
   useAircraftDetailQuery,
   useAircraftTrackQuery,
   useFlightsByAircraftQuery,
 } from "../../hooks/useAircraftQueries";
+import type { AircraftDetail } from "../../services/types";
 import AircraftThumb from "../Aircraft/components/AircraftThumb";
 
 const pageMuted = "rgba(255,255,255,0.55)";
