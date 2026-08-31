@@ -1,5 +1,11 @@
 import { keepPreviousData } from "@tanstack/react-query";
-import { useCallback, useMemo, useState } from "react";
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import DeckGLOverlay from "../../../../components/map/components/DeckGLOverlay/DeckGLOverlay";
 import { useAircraftListQuery } from "../../../../hooks/useAircraftQueries";
@@ -10,13 +16,16 @@ import { createAircraftIconLayer } from "../AircraftLayer/layers/createAircraftL
 import { FlightPopper } from "../FlightPopper/FlightPopper";
 import { createAircraftRouteLayer } from "../createAircraftRouteLayer/createAircraftRouteLayer";
 import { useRout } from "../hooks/useRout";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { useMap } from "react-map-gl/mapbox";
 
 const MapEntitiesLayer = () => {
   const { viewPort } = useViewPort();
   const { isRouteActive } = useRout();
   const { pathname } = useLocation();
+  const { current: map } = useMap();
   const isHome = pathname === "/";
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [selectedAircraft, setSelectedAircraft] = useState<Aircraft | null>(
     null,
@@ -51,6 +60,39 @@ const MapEntitiesLayer = () => {
       return ac;
     });
   }, []);
+
+  useEffect(() => {
+    const aircraftId = searchParams.get("select");
+
+    if (!aircraftId) {
+      return;
+    }
+
+    if (aircraft.length === 0) {
+      return;
+    }
+
+    const findAircraft = aircraft.find(
+      (ac) => String(ac.id) === String(aircraftId),
+    );
+
+    if (!findAircraft) {
+      return;
+    }
+
+    startTransition(() => {
+      setSelectedAircraft(findAircraft);
+    });
+
+    map?.flyTo({
+      center: [findAircraft.lon, findAircraft.lat],
+      zoom: 7,
+      duration: 1200,
+      essential: true,
+    });
+
+    setSearchParams({}, { replace: true });
+  }, [searchParams, setSearchParams, aircraft, map]);
 
   const layers = useMemo(() => {
     const layerList = [];
