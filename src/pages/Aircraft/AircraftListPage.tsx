@@ -111,6 +111,8 @@ const AircraftListPage = () => {
           sortField={sortField}
           setSortDirection={setSortDirection}
           sortDirection={sortDirection}
+          resultCount={displayedAircraft.length}
+          totalCount={allAircraft.length}
         />
         <Box
           sx={{

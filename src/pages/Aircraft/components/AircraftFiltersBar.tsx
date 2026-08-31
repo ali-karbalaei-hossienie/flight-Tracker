@@ -16,7 +16,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import React, {
+import {
   useCallback,
   useState,
   type Dispatch,
@@ -37,6 +37,8 @@ interface AircraftFiltersBarProps {
   sortField: SortField;
   setSortDirection: Dispatch<SetStateAction<SortDirection>>;
   sortDirection: SortDirection;
+  resultCount: number;
+  totalCount: number;
 }
 
 const filterIconButtonSx = (active: boolean) => ({
@@ -68,9 +70,12 @@ const AircraftFiltersBar = ({
   sortField,
   setSortDirection,
   sortDirection,
+  resultCount,
+  totalCount,
 }: AircraftFiltersBarProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const [showAdvanced, setShowAdvanced] = useState(false);
 
@@ -80,6 +85,163 @@ const AircraftFiltersBar = ({
     },
     [filters, setFilters],
   );
+
+  const altitudeSlider = (
+    <Box>
+      <Typography variant="caption" color="text.secondary" gutterBottom>
+        Altitude range (ft)
+      </Typography>
+      <Slider
+        value={[filters.minAltitude, filters.maxAltitude]}
+        onChange={(_, value) => {
+          const [min, max] = value as number[];
+          handleChange({ minAltitude: min, maxAltitude: max });
+        }}
+        min={0}
+        max={45000}
+        step={1000}
+        valueLabelDisplay="auto"
+        valueLabelFormat={(v) => `${v.toLocaleString()} ft`}
+        sx={{ mt: 1 }}
+      />
+    </Box>
+  );
+
+  const filterSelects = (
+    <>
+      <FormControl
+        size="small"
+        fullWidth={isMobile}
+        sx={{ minWidth: isMobile ? undefined : 150 }}
+      >
+        <InputLabel>Airline</InputLabel>
+        <Select
+          label="Airline"
+          value={filters.airline}
+          onChange={(e) => handleChange({ airline: e.target.value })}
+        >
+          <MenuItem value="all">All Airlines</MenuItem>
+          {airlines.map((a) => (
+            <MenuItem key={a} value={a}>
+              {a}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControl
+        size="small"
+        fullWidth={isMobile}
+        sx={{ minWidth: isMobile ? undefined : 130 }}
+      >
+        <InputLabel>Type</InputLabel>
+        <Select
+          label="Type"
+          value={filters.aircraftType}
+          onChange={(e) => handleChange({ aircraftType: e.target.value })}
+        >
+          <MenuItem value="all">All Types</MenuItem>
+          {aircraftTypes.map((t) => (
+            <MenuItem key={t} value={t}>
+              {t}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControl
+        size="small"
+        fullWidth={isMobile}
+        sx={{ minWidth: isMobile ? undefined : 140 }}
+      >
+        <InputLabel>Sort by</InputLabel>
+        <Select
+          label="Sort by"
+          value={sortField}
+          onChange={(e) => setSortField(e.target.value as SortField)}
+        >
+          <MenuItem value="callsign">Callsign</MenuItem>
+          <MenuItem value="airline">Airline</MenuItem>
+          <MenuItem value="altitude">Altitude</MenuItem>
+          <MenuItem value="speed">Speed</MenuItem>
+          <MenuItem value="lastUpdate">Last Update</MenuItem>
+        </Select>
+      </FormControl>
+      <FormControl
+        size="small"
+        fullWidth={isMobile}
+        sx={{ minWidth: isMobile ? undefined : 110 }}
+      >
+        <InputLabel>Order</InputLabel>
+        <Select
+          label="Order"
+          value={sortDirection}
+          onChange={(e) => setSortDirection(e.target.value as SortDirection)}
+        >
+          <MenuItem value="asc">Ascending</MenuItem>
+          <MenuItem value="desc">Descending</MenuItem>
+        </Select>
+      </FormControl>
+    </>
+  );
+
+  if (isMobile) {
+    return (
+      <Box
+        sx={{
+          bgcolor: "#1a1d1f",
+          borderRadius: 2.5,
+          border: "1px solid rgba(255,255,255,0.08)",
+          p: 2,
+          mb: 3,
+        }}
+      >
+        <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
+          <TextField
+            size="small"
+            placeholder="Search aircraft..."
+            value={filters.search}
+            onChange={(e) => handleChange({ search: e.target.value })}
+            sx={{ flex: 1, minWidth: 0 }}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search sx={{ fontSize: 20, color: "text.secondary" }} />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+          <Tooltip title={mobileFiltersOpen ? "Hide filters" : "Show filters"}>
+            <IconButton
+              onClick={() => setMobileFiltersOpen((v) => !v)}
+              aria-label="Toggle filters"
+              sx={filterIconButtonSx(mobileFiltersOpen)}
+            >
+              <FilterList />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+
+        <Collapse in={mobileFiltersOpen}>
+          <Stack
+            spacing={1.5}
+            sx={{ mt: 2, pt: 2, borderTop: "1px solid rgba(255,255,255,0.08)" }}
+          >
+            {filterSelects}
+            {altitudeSlider}
+          </Stack>
+        </Collapse>
+
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ mt: 1.5, display: "block" }}
+        >
+          Showing {resultCount} of {totalCount} aircraft
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -111,77 +273,7 @@ const AircraftFiltersBar = ({
             },
           }}
         />
-        <FormControl
-          size="small"
-          fullWidth={isMobile}
-          sx={{ minWidth: isMobile ? undefined : 150 }}
-        >
-          <InputLabel>Airline</InputLabel>
-          <Select
-            label="Airline"
-            value={filters.airline}
-            onChange={(e) => handleChange({ airline: e.target.value })}
-          >
-            <MenuItem value="all">All Airlines</MenuItem>
-            {airlines.map((a) => (
-              <MenuItem key={a} value={a}>
-                {a}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl
-          size="small"
-          fullWidth={isMobile}
-          sx={{ minWidth: isMobile ? undefined : 130 }}
-        >
-          <InputLabel>Type</InputLabel>
-          <Select
-            label="Type"
-            value={filters.aircraftType}
-            onChange={(e) => handleChange({ aircraftType: e.target.value })}
-          >
-            <MenuItem value="all">All Types</MenuItem>
-            {aircraftTypes.map((t) => (
-              <MenuItem key={t} value={t}>
-                {t}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl
-          size="small"
-          fullWidth={isMobile}
-          sx={{ minWidth: isMobile ? undefined : 140 }}
-        >
-          <InputLabel>Sort by</InputLabel>
-          <Select
-            label="Sort by"
-            value={sortField}
-            onChange={(e) => setSortField(e.target.value as SortField)}
-          >
-            <MenuItem value="callsign">Callsign</MenuItem>
-            <MenuItem value="airline">Airline</MenuItem>
-            <MenuItem value="altitude">Altitude</MenuItem>
-            <MenuItem value="speed">Speed</MenuItem>
-            <MenuItem value="lastUpdate">Last Update</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl
-          size="small"
-          fullWidth={isMobile}
-          sx={{ minWidth: isMobile ? undefined : 110 }}
-        >
-          <InputLabel>Order</InputLabel>
-          <Select
-            label="Order"
-            value={sortDirection}
-            onChange={(e) => setSortDirection(e.target.value as SortDirection)}
-          >
-            <MenuItem value="asc">Ascending</MenuItem>
-            <MenuItem value="desc">Descending</MenuItem>
-          </Select>
-        </FormControl>
+        {filterSelects}
         <Tooltip
           title={showAdvanced ? "Hide altitude filter" : "Show altitude filter"}
         >
@@ -198,24 +290,7 @@ const AircraftFiltersBar = ({
         <Box
           sx={{ mt: 2, pt: 2, borderTop: "1px solid rgba(255,255,255,0.08)" }}
         >
-          <Box>
-            <Typography variant="caption" color="text.secondary" gutterBottom>
-              Altitude range (ft)
-            </Typography>
-            <Slider
-              value={[filters.minAltitude, filters.maxAltitude]}
-              onChange={(_, value) => {
-                const [min, max] = value as number[];
-                handleChange({ minAltitude: min, maxAltitude: max });
-              }}
-              min={0}
-              max={45000}
-              step={1000}
-              valueLabelDisplay="auto"
-              valueLabelFormat={(v) => `${v.toLocaleString()} ft`}
-              sx={{ mt: 1 }}
-            />
-          </Box>
+          {altitudeSlider}
         </Box>
       </Collapse>
     </Box>
