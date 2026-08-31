@@ -78,3 +78,57 @@ export interface FleetStats {
   avg_speed_kts: number;
   timestamp: number;
 }
+
+export interface AircraftDetail extends Aircraft {
+  sensors?: number[];
+  position_source?: string;
+  spi?: boolean;
+  time_position?: number;
+  last_contact?: number;
+  coordinates_str?: string;
+}
+
+export interface TrackWaypoint {
+  lat: number;
+  lon: number;
+  altitude_ft: number;
+  heading_deg?: number;
+  speed_kts?: number;
+  timestamp?: number;
+}
+
+export interface AircraftTrackResponse {
+  id: string;
+  callsign?: string;
+  startTime: number;
+  endTime: number;
+  waypoints: TrackWaypoint[];
+  path: [number, number][];
+  path_with_altitude: [number, number, number][];
+}
+
+export interface AirLabsFlight {
+  hex: string;
+  reg_number?: string;
+  flag?: string;
+  lat?: number;
+  lng?: number;
+  alt?: number;
+  dir?: number;
+  speed?: number;
+  v_speed?: number;
+  squawk?: string;
+  flight_number?: string;
+  flight_icao?: string;
+  flight_iata?: string;
+  dep_icao?: string;
+  dep_iata?: string;
+  arr_icao?: string;
+  arr_iata?: string;
+  airline_icao?: string;
+  airline_iata?: string;
+  aircraft_icao?: string;
+  updated?: number;
+  status?: string;
+  type?: string;
+}

@@ -8,11 +8,20 @@ import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 //   fetchFleetStats,
 //   fetchFlightsByAircraft,
 // } from "../services/flightApi";
-import { fetchAircraftList, fetchFleetStats } from "../services/flightApi";
+import {
+  fetchAircraftDetail,
+  fetchAircraftList,
+  fetchAircraftTrack,
+  fetchFleetStats,
+  fetchFlightsByAircraft,
+} from "../services/flightApi";
 import type {
+  AircraftDetail,
   // AircraftDetail,
   AircraftListResponse,
   AircraftQueryParams,
+  AircraftTrackResponse,
+  AirLabsFlight,
   FleetStats,
 } from "../services/types";
 
@@ -68,6 +77,46 @@ export function useFleetStatsQuery(
     queryFn: () => fetchFleetStats(),
     staleTime: 10000,
     refetchInterval: 15000,
+    ...options,
+  });
+}
+
+export function useAircraftDetailQuery(
+  aircraftId?: string | null,
+  options?: Partial<UseQueryOptions<AircraftDetail, Error>>,
+) {
+  return useQuery<AircraftDetail, Error>({
+    queryKey: queryKeys.aircraft.detail(aircraftId || ""),
+    queryFn: () => fetchAircraftDetail(aircraftId!),
+    enabled: Boolean(aircraftId),
+    staleTime: 5000,
+    ...options,
+  });
+}
+
+export function useAircraftTrackQuery(
+  aircraftId?: string | null,
+  time?: number,
+  options?: Partial<UseQueryOptions<AircraftTrackResponse, Error>>,
+) {
+  return useQuery<AircraftTrackResponse, Error>({
+    queryKey: queryKeys.aircraft.track(aircraftId || "", time),
+    queryFn: () => fetchAircraftTrack(aircraftId!, time),
+    enabled: Boolean(aircraftId),
+    staleTime: 10000,
+    ...options,
+  });
+}
+
+export function useFlightsByAircraftQuery(
+  icao24?: string | null,
+  options?: Partial<UseQueryOptions<AirLabsFlight[], Error>>,
+) {
+  return useQuery<AirLabsFlight[], Error>({
+    queryKey: queryKeys.aircraft.history(icao24 || ""),
+    queryFn: () => fetchFlightsByAircraft(icao24!),
+    enabled: Boolean(icao24),
+    staleTime: 30000,
     ...options,
   });
 }
