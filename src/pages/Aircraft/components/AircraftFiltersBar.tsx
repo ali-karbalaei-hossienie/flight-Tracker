@@ -1,17 +1,27 @@
-import { Search } from "@mui/icons-material";
+import { FilterList, Search } from "@mui/icons-material";
 import {
   Box,
+  Collapse,
   FormControl,
+  IconButton,
   InputAdornment,
   InputLabel,
   MenuItem,
   Select,
+  Slider,
   Stack,
   TextField,
+  Tooltip,
+  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import React, { useCallback, type Dispatch, type SetStateAction } from "react";
+import React, {
+  useCallback,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import type {
   AircraftFilters,
   SortDirection,
@@ -29,6 +39,26 @@ interface AircraftFiltersBarProps {
   sortDirection: SortDirection;
 }
 
+const filterIconButtonSx = (active: boolean) => ({
+  width: 42,
+  height: 42,
+  flexShrink: 0,
+  alignSelf: "center",
+  borderRadius: 2,
+  border: "1px solid",
+  borderColor: active ? "primary.main" : "rgba(255,255,255,0.12)",
+  bgcolor: active ? "primary.main" : "rgba(255,255,255,0.06)",
+  color: active ? "#fff" : "text.secondary",
+  transition: "all 0.2s ease",
+  "&:hover": {
+    bgcolor: active ? "primary.dark" : "rgba(255,255,255,0.1)",
+    borderColor: active ? "primary.dark" : "rgba(255,255,255,0.2)",
+  },
+  "& .MuiSvgIcon-root": {
+    fontSize: 22,
+  },
+});
+
 const AircraftFiltersBar = ({
   filters,
   setFilters,
@@ -41,6 +71,8 @@ const AircraftFiltersBar = ({
 }: AircraftFiltersBarProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const handleChange = useCallback(
     (patch: Partial<AircraftFilters>) => {
@@ -150,7 +182,42 @@ const AircraftFiltersBar = ({
             <MenuItem value="desc">Descending</MenuItem>
           </Select>
         </FormControl>
+        <Tooltip
+          title={showAdvanced ? "Hide altitude filter" : "Show altitude filter"}
+        >
+          <IconButton
+            onClick={() => setShowAdvanced((v) => !v)}
+            aria-label="Toggle altitude filter"
+            sx={filterIconButtonSx(showAdvanced)}
+          >
+            <FilterList />
+          </IconButton>
+        </Tooltip>
       </Stack>
+      <Collapse in={showAdvanced}>
+        <Box
+          sx={{ mt: 2, pt: 2, borderTop: "1px solid rgba(255,255,255,0.08)" }}
+        >
+          <Box>
+            <Typography variant="caption" color="text.secondary" gutterBottom>
+              Altitude range (ft)
+            </Typography>
+            <Slider
+              value={[filters.minAltitude, filters.maxAltitude]}
+              onChange={(_, value) => {
+                const [min, max] = value as number[];
+                handleChange({ minAltitude: min, maxAltitude: max });
+              }}
+              min={0}
+              max={45000}
+              step={1000}
+              valueLabelDisplay="auto"
+              valueLabelFormat={(v) => `${v.toLocaleString()} ft`}
+              sx={{ mt: 1 }}
+            />
+          </Box>
+        </Box>
+      </Collapse>
     </Box>
   );
 };
