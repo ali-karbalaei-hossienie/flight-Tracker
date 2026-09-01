@@ -1,24 +1,21 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { FlightInfo } from "../../pages/Home/components/FlightPopper/hooks/types";
 
-interface BookmarkState {
-  bookmarks: FlightInfo[];
-}
-
-const initialState: BookmarkState = {
-  bookmarks: [],
-};
+const initialState: FlightInfo[] = [];
 
 const bookmarksSlice = createSlice({
   name: "bookmark",
   initialState,
   reducers: {
     addBookmark: (state, action: PayloadAction<FlightInfo>) => {
-      state.bookmarks = [...state.bookmarks, action.payload];
+      return [...state, action.payload];
+    },
+    deleteBookmark: (state, action) => {
+      state.filter((item) => item !== action.payload.id);
     },
   },
 });
 
-export const { addBookmark } = bookmarksSlice.actions;
+export const { addBookmark, deleteBookmark } = bookmarksSlice.actions;
 
 export default bookmarksSlice.reducer;

@@ -40,7 +40,8 @@
     "sonner": "^2.0.8",
     "stylis": "^4.4.0",
     "stylis-plugin-rtl": "^2.1.1",
-    "tss-react": "^4.9.21"
+    "tss-react": "^4.9.21",
+    "uuid": "^14.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

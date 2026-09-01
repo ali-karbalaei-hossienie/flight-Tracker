@@ -2,6 +2,7 @@ import type { Aircraft } from "../../../../../../services/types";
 
 export interface FlightInfo {
   callsign: string;
+  id: string;
   flightNumber: string | undefined;
   lat: number;
   lon: number;

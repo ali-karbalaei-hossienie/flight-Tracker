@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { calculateFlightProgress } from "../../AircraftLayer/utils/flightCalculations";
 import type { Aircraft } from "../../../../../services/types";
 import type { IFlightPopper, useFlightPopperReturn } from "./types";
+import { v4 } from "uuid";
 
 export const useFlightPopper = ({
   selectedAircraft,
@@ -54,7 +55,7 @@ export const useFlightPopper = ({
 
     return {
       callsign: selectedAircraft.callsign,
-
+      id: v4(),
       lat: selectedAircraft.lat,
       lon: selectedAircraft.lon,
 
