@@ -3,12 +3,13 @@ import {
   BookmarkBorder,
   HomeOutlined,
 } from "@mui/icons-material";
+import SettingsIcon from "@mui/icons-material/Settings";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { MapProvider } from "react-map-gl/mapbox";
-import { Provider } from "react-redux";
+import { useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
-import { store } from "./app/store";
+import { type RootState } from "./app/store";
 import Bookmark from "./components/Bookmark/Bookmark";
 import {
   SidebarProvider,
@@ -17,6 +18,7 @@ import {
 import AppShell from "./layout/AppShell";
 import AircraftListPage from "./pages/Aircraft/AircraftListPage";
 import AircraftDetailPage from "./pages/AircraftDetailPage/AircraftDetailPage";
+import Setting from "./pages/Setting/Setting";
 import { getDesignTokens } from "./theme/theme";
 
 const sidebarConfig: SidebarItem[] = [
@@ -41,29 +43,36 @@ const sidebarConfig: SidebarItem[] = [
     icon: <BookmarkBorder />,
     component: <Bookmark />,
   },
+  {
+    id: "setting",
+    textButton: "Setting",
+    position: "bottom",
+    icon: <SettingsIcon />,
+    component: <Setting />,
+  },
 ];
 
 function App() {
-  const myTheme = createTheme(getDesignTokens("dark"));
+  const mode = useSelector((state: RootState) => state.setting.mode);
+
+  const myTheme = createTheme(getDesignTokens(mode));
   return (
     <BrowserRouter>
-      <Provider store={store}>
-        <ThemeProvider theme={myTheme}>
-          <Toaster position="top-center" />
-          <CssBaseline />
-          <MapProvider>
-            <SidebarProvider config={sidebarConfig}>
-              <Routes>
-                <Route element={<AppShell />}>
-                  <Route index element={null} />
-                  <Route path="airplane" element={<AircraftListPage />} />
-                  <Route path="airplane/:id" element={<AircraftDetailPage />} />
-                </Route>
-              </Routes>
-            </SidebarProvider>
-          </MapProvider>
-        </ThemeProvider>
-      </Provider>
+      <ThemeProvider theme={myTheme}>
+        <Toaster position="top-center" />
+        <CssBaseline />
+        <MapProvider>
+          <SidebarProvider config={sidebarConfig}>
+            <Routes>
+              <Route element={<AppShell />}>
+                <Route index element={null} />
+                <Route path="airplane" element={<AircraftListPage />} />
+                <Route path="airplane/:id" element={<AircraftDetailPage />} />
+              </Route>
+            </Routes>
+          </SidebarProvider>
+        </MapProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

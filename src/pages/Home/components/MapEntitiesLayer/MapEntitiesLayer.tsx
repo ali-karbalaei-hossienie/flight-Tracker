@@ -18,6 +18,8 @@ import { createAircraftRouteLayer } from "../createAircraftRouteLayer/createAirc
 import { useRout } from "../hooks/useRout";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useMap } from "react-map-gl/mapbox";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../app/store";
 
 const MapEntitiesLayer = () => {
   const { viewPort } = useViewPort();
@@ -29,6 +31,10 @@ const MapEntitiesLayer = () => {
 
   const [selectedAircraft, setSelectedAircraft] = useState<Aircraft | null>(
     null,
+  );
+
+  const airplaneSize = useSelector(
+    (state: RootState) => state.setting.airplaneSize,
   );
 
   const { data } = useAircraftListQuery(viewPort, {
@@ -107,7 +113,7 @@ const MapEntitiesLayer = () => {
 
     if (visibleAircrafts.length > 0) {
       const iconLayers = createAircraftIconLayer(visibleAircrafts, {
-        iconSize: 30,
+        iconSize: airplaneSize,
         pickable: true,
         showAltitude: false,
         onAircraftClick: handleAircraftClick,
@@ -122,7 +128,7 @@ const MapEntitiesLayer = () => {
     }
 
     return layerList;
-  }, [selectedAircraft, visibleAircrafts, handleAircraftClick]);
+  }, [selectedAircraft, visibleAircrafts, handleAircraftClick, airplaneSize]);
 
   const FlightPopperComponent = useMemo(() => {
     return (
