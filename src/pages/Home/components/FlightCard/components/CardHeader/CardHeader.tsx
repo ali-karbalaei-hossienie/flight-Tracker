@@ -2,6 +2,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import { alpha, Box, Chip, IconButton, Typography } from "@mui/material";
 import type { FlightInfo } from "../../../FlightPopper/hooks/types";
+import { useDispatch } from "react-redux";
+import { addBookmark } from "../../../../../../features/bookmark/bookmarkSlice";
 
 interface ICardHeader {
   onClose: () => void;
@@ -9,6 +11,7 @@ interface ICardHeader {
 }
 
 const CardHeader = ({ onClose, data }: ICardHeader) => {
+  const dispatch = useDispatch();
   return (
     <Box
       sx={{
@@ -95,6 +98,7 @@ const CardHeader = ({ onClose, data }: ICardHeader) => {
             p: 0,
             color: "primary.main",
           }}
+          onClick={() => dispatch(addBookmark(data))}
         >
           <StarBorderIcon fontSize="small" />
         </IconButton>
