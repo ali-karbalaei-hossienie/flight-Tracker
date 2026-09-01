@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import { type RootState } from "./app/store";
-import Bookmark from "./components/bookMarks/Bookmark";
+import Bookmark from "./components/bookmark/Bookmark";
 import {
   SidebarProvider,
   type SidebarItem,
