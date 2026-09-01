@@ -10,12 +10,12 @@ const bookmarksSlice = createSlice({
     addBookmark: (state, action: PayloadAction<FlightInfo>) => {
       return [...state, action.payload];
     },
-    deleteBookmark: (state, action) => {
-      state.filter((item) => item !== action.payload.id);
+    removeBookmark: (state, action) => {
+      return state.filter((item) => item.id !== action.payload);
     },
   },
 });
 
-export const { addBookmark, deleteBookmark } = bookmarksSlice.actions;
+export const { addBookmark, removeBookmark } = bookmarksSlice.actions;
 
 export default bookmarksSlice.reducer;

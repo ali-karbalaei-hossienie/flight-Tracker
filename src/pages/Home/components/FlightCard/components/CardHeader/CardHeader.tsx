@@ -1,11 +1,15 @@
 import CloseIcon from "@mui/icons-material/Close";
+import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import { alpha, Box, Chip, IconButton, Typography } from "@mui/material";
-import type { FlightInfo } from "../../../FlightPopper/hooks/types";
 import { useDispatch, useSelector } from "react-redux";
-import { addBookmark } from "../../../../../../features/bookmark/bookmarkSlice";
-import StarIcon from "@mui/icons-material/Star";
 import type { RootState } from "../../../../../../app/store";
+import {
+  addBookmark,
+  removeBookmark,
+} from "../../../../../../features/bookmark/bookmarkSlice";
+import type { FlightInfo } from "../../../FlightPopper/hooks/types";
+
 interface ICardHeader {
   onClose: () => void;
   data: FlightInfo;
@@ -14,9 +18,18 @@ interface ICardHeader {
 const CardHeader = ({ onClose, data }: ICardHeader) => {
   const dispatch = useDispatch();
   const bookmarks = useSelector((state: RootState) => state.bookmarks);
-  const isBookmarked = bookmarks.some(
-    (item) => item.callsign === data.callsign,
-  );
+
+  const isBookmarked = bookmarks.some((item) => item.id === data.id);
+
+  console.log(isBookmarked);
+
+  const handleToggleBookmark = () => {
+    if (isBookmarked) {
+      dispatch(removeBookmark(data.id));
+    } else {
+      dispatch(addBookmark(data));
+    }
+  };
 
   return (
     <Box
@@ -100,11 +113,14 @@ const CardHeader = ({ onClose, data }: ICardHeader) => {
       >
         <IconButton
           size="small"
+          aria-label={
+            isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"
+          }
+          onClick={handleToggleBookmark}
           sx={{
-            p: 0,
+            p: 0.5,
             color: "primary.main",
           }}
-          onClick={() => dispatch(addBookmark(data))}
         >
           {isBookmarked ? (
             <StarIcon fontSize="small" />
@@ -115,9 +131,10 @@ const CardHeader = ({ onClose, data }: ICardHeader) => {
 
         <IconButton
           size="small"
+          aria-label="Close"
           onClick={onClose}
           sx={{
-            p: 0,
+            p: 0.5,
             color: "text.secondary",
             "&:hover": {
               color: "text.primary",
