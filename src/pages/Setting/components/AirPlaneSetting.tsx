@@ -11,7 +11,7 @@ const AirPlaneSetting = () => {
   return (
     <Box>
       <Typography variant="body2" sx={{ color: "text.secondary", mb: 1.5 }}>
-        AirPlane Settings
+        AirPlane Setting
       </Typography>
       <Box>
         <Typography variant="caption" color="text.secondary">

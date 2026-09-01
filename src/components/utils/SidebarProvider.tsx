@@ -9,6 +9,7 @@ import {
   ListItemButton,
   ListItemText,
   Typography,
+  useTheme,
 } from "@mui/material";
 import {
   createContext,
@@ -70,6 +71,7 @@ export const useSidebar = () => {
 export const SidebarProvider = ({ children, config }: SidebarProviderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme();
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeComponentId, setActiveComponentId] = useState<string | null>(
@@ -233,9 +235,9 @@ export const SidebarProvider = ({ children, config }: SidebarProviderProps) => {
               flexDirection: "column",
               justifyContent: "space-between",
               py: 2,
-              bgcolor: "#16181a",
+              bgcolor: theme.palette.background.paper,
               borderRight: "1px solid",
-              borderColor: "rgba(255, 255, 255, 0.08)",
+              borderColor: theme.palette.divider,
             }}
           >
             <Box>{renderList(topItems)}</Box>
@@ -252,9 +254,9 @@ export const SidebarProvider = ({ children, config }: SidebarProviderProps) => {
               zIndex: 1,
               display: "flex",
               flexDirection: "column",
-              bgcolor: "#1a1d1f",
+              bgcolor: theme.palette.background.paper,
               borderRight: "1px solid",
-              borderColor: "rgba(255, 255, 255, 0.08)",
+              borderColor: theme.palette.divider,
               boxShadow: isExpanded ? "8px 0 32px rgba(0,0,0,0.45)" : "none",
               transform: isExpanded
                 ? "translateX(0)"
@@ -276,7 +278,7 @@ export const SidebarProvider = ({ children, config }: SidebarProviderProps) => {
                     px: 2.5,
                     py: 2,
                     borderBottom: "1px solid",
-                    borderColor: "rgba(255, 255, 255, 0.08)",
+                    borderColor: theme.palette.divider,
                     flexShrink: 0,
                   }}
                 >
@@ -292,8 +294,8 @@ export const SidebarProvider = ({ children, config }: SidebarProviderProps) => {
                     onClick={closeSidebar}
                     sx={{
                       color: "text.secondary",
-                      bgcolor: "rgba(255, 255, 255, 0.06)",
-                      "&:hover": { bgcolor: "rgba(255, 255, 255, 0.12)" },
+                      bgcolor: theme.palette.action.hoverOpacity,
+                      "&:hover": { bgcolor: theme.palette.action.hover },
                     }}
                   >
                     <Close fontSize="small" />
