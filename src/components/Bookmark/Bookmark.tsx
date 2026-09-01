@@ -1,11 +1,25 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import GpsNotFixedIcon from "@mui/icons-material/GpsNotFixed";
 import { Box, IconButton, Stack, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
+import { removeBookmark } from "../../features/bookmark/bookmarkSlice";
+import { useMap } from "react-map-gl/mapbox";
+import type { FlightInfo } from "../../pages/Home/components/FlightPopper/hooks/types";
 
 const Bookmark = () => {
   const bookmarks = useSelector((state: RootState) => state.bookmarks);
+  const dispatch = useDispatch();
+  const { map } = useMap();
+
+  const handleFlyMap = (bookmark: FlightInfo) => {
+    console.log(bookmark);
+
+    map?.flyTo({
+      center: [bookmark.lon, bookmark.lat],
+      zoom: 6,
+    });
+  };
 
   if (!bookmarks.length) {
     return (
@@ -56,7 +70,11 @@ const Bookmark = () => {
           </Stack>
 
           <Stack direction="row" spacing={0.5} sx={{ flexShrink: 0 }}>
-            <IconButton size="small" aria-label="Locate aircraft">
+            <IconButton
+              onClick={() => handleFlyMap(bookmark)}
+              size="small"
+              aria-label="Locate aircraft"
+            >
               <GpsNotFixedIcon fontSize="small" />
             </IconButton>
             <IconButton
@@ -65,6 +83,7 @@ const Bookmark = () => {
               sx={(theme) => ({
                 color: theme.palette.error.light,
               })}
+              onClick={() => dispatch(removeBookmark(bookmark.id))}
             >
               <DeleteIcon fontSize="small" />
             </IconButton>

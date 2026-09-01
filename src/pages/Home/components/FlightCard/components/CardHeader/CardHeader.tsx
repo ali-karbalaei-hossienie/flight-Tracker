@@ -21,8 +21,6 @@ const CardHeader = ({ onClose, data }: ICardHeader) => {
 
   const isBookmarked = bookmarks.some((item) => item.id === data.id);
 
-  console.log(isBookmarked);
-
   const handleToggleBookmark = () => {
     if (isBookmarked) {
       dispatch(removeBookmark(data.id));
