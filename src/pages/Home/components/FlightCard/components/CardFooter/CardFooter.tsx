@@ -1,13 +1,12 @@
-import { alpha, Box, Typography } from "@mui/material";
-import React, { type FC } from "react";
-import ViewInArIcon from "@mui/icons-material/ViewInAr";
 import AltRouteIcon from "@mui/icons-material/AltRoute";
 import CenterFocusStrongIcon from "@mui/icons-material/CenterFocusStrong";
-import IosShareIcon from "@mui/icons-material/IosShare";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { useRout } from "../../../hooks/useRout";
+import ViewInArIcon from "@mui/icons-material/ViewInAr";
+import { alpha, Box, Typography } from "@mui/material";
+import React, { type FC } from "react";
 import { useMap } from "react-map-gl/mapbox";
 import type { FlightInfo } from "../../../FlightPopper/hooks/types";
+import { useRout } from "../../../hooks/useRout";
 const CardFooter: FC<{ data: FlightInfo }> = ({ data }) => {
   const { isRouteActive, toggleRoute } = useRout();
   const { current: map } = useMap();
@@ -48,8 +47,6 @@ const CardFooter: FC<{ data: FlightInfo }> = ({ data }) => {
         label="Follow"
         onClick={handleFollow}
       />
-
-      <ActionButton icon={<IosShareIcon />} label="Share" />
 
       <ActionButton icon={<MoreHorizIcon />} label="More" />
     </Box>
