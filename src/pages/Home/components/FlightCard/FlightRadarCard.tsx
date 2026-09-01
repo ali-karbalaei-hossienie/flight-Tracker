@@ -1,11 +1,12 @@
 import { Box, CircularProgress, Paper, alpha } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 
 import type { FlightInfo } from "../FlightPopper/hooks/types";
 import CardFooter from "./components/CardFooter/CardFooter";
 import CardHeader from "./components/CardHeader/CardHeader";
 import ImageSlider from "./components/ImageSlider/ImageSlider";
 import Schedule from "./components/Schedule/Schedule";
+import { useLocation } from "react-router-dom";
 
 interface FlightRadarCardProps {
   data: FlightInfo;
@@ -19,6 +20,14 @@ export const FlightRadarCard: React.FC<FlightRadarCardProps> = ({
 
   loading = false,
 }) => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      onClose();
+    }
+  }, [location.pathname, onClose]);
+
   return (
     <Paper
       elevation={8}
