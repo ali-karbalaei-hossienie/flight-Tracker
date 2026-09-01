@@ -5,7 +5,7 @@ import {
   Speed,
   Terrain,
 } from "@mui/icons-material";
-import { Box, Chip, Stack, Typography } from "@mui/material";
+import { Box, Chip, Stack, Typography, useTheme } from "@mui/material";
 import { memo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Aircraft } from "../../../services/types";
@@ -17,6 +17,7 @@ interface AircraftCardProps {
 
 function AircraftCard({ aircraft }: AircraftCardProps) {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const handleClick = useCallback(() => {
     navigate(`/airplane/${aircraft.id}`);
@@ -29,8 +30,8 @@ function AircraftCard({ aircraft }: AircraftCardProps) {
         cursor: "pointer",
         borderRadius: 2.5,
         overflow: "hidden",
-        bgcolor: "#1d1f20",
-        border: "1px solid rgba(255,255,255,0.08)",
+        bgcolor: theme.palette.background.paper,
+        border: `1px solid ${theme.palette.divider}`,
         transition:
           "transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease",
         "&:hover": {
@@ -64,8 +65,8 @@ function AircraftCard({ aircraft }: AircraftCardProps) {
             left: 10,
             height: 22,
             fontSize: "0.65rem",
-            bgcolor: "rgba(0,0,0,0.55)",
-            color: "#fff",
+            bgcolor: theme.palette.primary.main,
+            color: theme.palette.text.primary,
           }}
         />
         <Box
