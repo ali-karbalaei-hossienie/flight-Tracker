@@ -1,6 +1,5 @@
-import React from "react";
-import ThemeSection from "./components/ThemeSection";
 import AirPlaneSetting from "./components/AirPlaneSetting";
+import ThemeSection from "./components/ThemeSection";
 
 const Setting = () => {
   return (

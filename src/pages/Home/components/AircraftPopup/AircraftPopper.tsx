@@ -94,12 +94,14 @@ export const AircraftPopper: React.FC<AircraftPopperProps> = ({
         }}
       >
         <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={1}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 1,
+          }}
         >
-          <Typography variant="subtitle1" fontWeight="bold">
+          <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
             {aircraft.callsign || "Unknown Flight"}
           </Typography>
           <IconButton size="small" onClick={onClose} sx={{ color: "grey.400" }}>
@@ -109,20 +111,23 @@ export const AircraftPopper: React.FC<AircraftPopperProps> = ({
 
         <Divider sx={{ borderColor: "rgba(255, 255, 255, 0.1)", my: 1 }} />
 
-        <Box display="flex" flexDirection="column" gap={0.5} my={1}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, my: 1 }}>
           <Typography variant="body2" color="grey.400">
-            Hex: <span style={{ color: "#fff" }}>{aircraft.hex || "N/A"}</span>
-          </Typography>
-          <Typography variant="body2" color="grey.400">
-            Altitude:{" "}
+            heading_deg:
             <span style={{ color: "#fff" }}>
-              {aircraft.altitude ? `${aircraft.altitude} ft` : "N/A"}
+              {aircraft.heading_deg || "N/A"}
             </span>
           </Typography>
           <Typography variant="body2" color="grey.400">
-            Speed:{" "}
+            Altitude:
             <span style={{ color: "#fff" }}>
-              {aircraft.speed ? `${aircraft.speed} kts` : "N/A"}
+              {aircraft.altitude_ft ? `${aircraft.altitude_ft} ft` : "N/A"}
+            </span>
+          </Typography>
+          <Typography variant="body2" color="grey.400">
+            Speed:
+            <span style={{ color: "#fff" }}>
+              {aircraft.speed_kts ? `${aircraft.speed_kts} kts` : "N/A"}
             </span>
           </Typography>
         </Box>

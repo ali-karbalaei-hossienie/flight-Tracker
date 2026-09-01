@@ -4,11 +4,11 @@ import type { BboxParams } from "../../../../../services/types";
 
 export const useViewPort = () => {
   const { current: map } = useMap();
-  const [viewPort, setViewPort] = useState();
+  const [viewPort, setViewPort] = useState<BboxParams | undefined>();
 
   useEffect(() => {
     if (!map) return;
-    const handleMoveEnd = (e) => {
+    const handleMoveEnd = (e: any) => {
       const map = e.target;
       const bounds = map.getBounds();
       const zoom = Math.round(map.getZoom() * 10) / 10;
