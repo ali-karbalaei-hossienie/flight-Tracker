@@ -1,0 +1,219 @@
+.ftrack-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  background: radial-gradient(
+    circle at 50% 40%,
+    #0a1f2e 0%,
+    #050d14 70%,
+    #020608 100%
+  );
+  color: #d6f5ff;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+/* ---------- Radar ---------- */
+.ftrack-loader__radar {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 200, 150, 0.06) 0%,
+    rgba(0, 200, 150, 0.02) 60%,
+    transparent 80%
+  );
+}
+
+.ftrack-loader__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 229, 178, 0.25);
+}
+
+.ftrack-loader__ring--1 {
+  inset: 0;
+}
+
+.ftrack-loader__ring--2 {
+  inset: 30px;
+}
+
+.ftrack-loader__ring--3 {
+  inset: 60px;
+}
+
+.ftrack-loader__crosshair {
+  position: absolute;
+  background: rgba(0, 229, 178, 0.15);
+}
+
+.ftrack-loader__crosshair--h {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.ftrack-loader__crosshair--v {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+}
+
+.ftrack-loader__sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(0, 229, 178, 0.55) 0deg,
+    rgba(0, 229, 178, 0.12) 40deg,
+    transparent 80deg,
+    transparent 360deg
+  );
+  animation: ftrack-sweep 3s linear infinite;
+  mix-blend-mode: screen;
+}
+
+@keyframes ftrack-sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Plane orbiting the radar ---------- */
+.ftrack-loader__plane-orbit {
+  position: absolute;
+  inset: 0;
+  animation: ftrack-orbit 4.5s linear infinite;
+}
+
+.ftrack-loader__plane {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 26px;
+  height: 26px;
+  margin-left: -13px;
+  color: #7dfff0;
+  filter: drop-shadow(0 0 6px rgba(125, 255, 240, 0.9));
+  transform: rotate(90deg);
+}
+
+.ftrack-loader__plane svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes ftrack-orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Blips (other flights) ---------- */
+.ftrack-loader__blip {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00e5b2;
+  box-shadow: 0 0 8px 2px rgba(0, 229, 178, 0.7);
+  animation: ftrack-blip 2s ease-in-out infinite;
+}
+
+.ftrack-loader__blip--1 {
+  top: 40px;
+  left: 60px;
+  animation-delay: 0s;
+}
+
+.ftrack-loader__blip--2 {
+  top: 140px;
+  left: 170px;
+  animation-delay: 0.6s;
+}
+
+.ftrack-loader__blip--3 {
+  top: 100px;
+  left: 30px;
+  animation-delay: 1.2s;
+}
+
+@keyframes ftrack-blip {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+}
+
+/* ---------- Brand ---------- */
+.ftrack-loader__brand {
+  text-align: center;
+}
+
+.ftrack-loader__title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #eafffb;
+}
+
+.ftrack-loader__subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  color: rgba(214, 245, 255, 0.55);
+  letter-spacing: 0.3px;
+}
+
+/* ---------- Progress bar ---------- */
+.ftrack-loader__progress {
+  width: 220px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(0, 229, 178, 0.15);
+  overflow: hidden;
+}
+
+.ftrack-loader__bar {
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #00e5b2, transparent);
+  animation: ftrack-bar 1.6s ease-in-out infinite;
+}
+
+@keyframes ftrack-bar {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+/* ---------- Status text ---------- */
+.ftrack-loader__status {
+  font-size: 13px;
+  color: rgba(214, 245, 255, 0.7);
+  letter-spacing: 0.3px;
+  min-height: 18px;
+}

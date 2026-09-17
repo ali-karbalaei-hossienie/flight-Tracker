@@ -20,6 +20,8 @@ import AircraftListPage from "./pages/Aircraft/AircraftListPage";
 import AircraftDetailPage from "./pages/AircraftDetailPage/AircraftDetailPage";
 import Setting from "./pages/Setting/Setting";
 import { getDesignTokens } from "./theme/theme";
+import FlightTrackerLoader from "./components/FlightTrackerLoader/FlightTrackerLoader";
+import { useEffect, useState } from "react";
 
 const sidebarConfig: SidebarItem[] = [
   {
@@ -53,7 +55,16 @@ const sidebarConfig: SidebarItem[] = [
 ];
 
 function App() {
+  const [loading, setLoading] = useState(true);
+
   const mode = useSelector((state: RootState) => state.setting.mode);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const myTheme = createTheme(getDesignTokens(mode));
   return (
@@ -62,6 +73,7 @@ function App() {
         <Toaster position="top-center" />
         <CssBaseline />
         <MapProvider>
+          <FlightTrackerLoader visible={loading} />
           <SidebarProvider config={sidebarConfig}>
             <Routes>
               <Route element={<AppShell />}>
